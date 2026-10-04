@@ -1,0 +1,627 @@
+{
+ "skillVersion": "1.0.0",
+ "blocks": [
+  {
+   "kind": "web-app",
+   "category": "client",
+   "name": "Web app"
+  },
+  {
+   "kind": "mobile-app",
+   "category": "client",
+   "name": "Mobile app"
+  },
+  {
+   "kind": "cli",
+   "category": "client",
+   "name": "CLI"
+  },
+  {
+   "kind": "chat-bot",
+   "category": "client",
+   "name": "Chat bot"
+  },
+  {
+   "kind": "browser-extension",
+   "category": "client",
+   "name": "Browser extension"
+  },
+  {
+   "kind": "api-server",
+   "category": "backend",
+   "name": "API server"
+  },
+  {
+   "kind": "serverless-function",
+   "category": "backend",
+   "name": "Serverless function"
+  },
+  {
+   "kind": "worker",
+   "category": "backend",
+   "name": "Worker"
+  },
+  {
+   "kind": "queue",
+   "category": "backend",
+   "name": "Queue"
+  },
+  {
+   "kind": "cron",
+   "category": "backend",
+   "name": "Cron job"
+  },
+  {
+   "kind": "agent",
+   "category": "orchestration",
+   "name": "Agent"
+  },
+  {
+   "kind": "agent-loop",
+   "category": "orchestration",
+   "name": "Agent loop"
+  },
+  {
+   "kind": "workflow",
+   "category": "orchestration",
+   "name": "Workflow"
+  },
+  {
+   "kind": "router",
+   "category": "orchestration",
+   "name": "Router"
+  },
+  {
+   "kind": "tool-call",
+   "category": "orchestration",
+   "name": "Tool call"
+  },
+  {
+   "kind": "llm",
+   "category": "model",
+   "name": "LLM"
+  },
+  {
+   "kind": "embedding-model",
+   "category": "model",
+   "name": "Embedding model"
+  },
+  {
+   "kind": "reranker",
+   "category": "model",
+   "name": "Reranker"
+  },
+  {
+   "kind": "image-model",
+   "category": "model",
+   "name": "Image model"
+  },
+  {
+   "kind": "audio-model",
+   "category": "model",
+   "name": "Audio model"
+  },
+  {
+   "kind": "fine-tuned-model",
+   "category": "model",
+   "name": "Fine-tuned model"
+  },
+  {
+   "kind": "ai-gateway",
+   "category": "gateway",
+   "name": "AI gateway"
+  },
+  {
+   "kind": "model-router",
+   "category": "gateway",
+   "name": "Model router"
+  },
+  {
+   "kind": "rate-limiter",
+   "category": "gateway",
+   "name": "Rate limiter"
+  },
+  {
+   "kind": "cache",
+   "category": "gateway",
+   "name": "Cache"
+  },
+  {
+   "kind": "vector-db",
+   "category": "retrieval",
+   "name": "Vector DB"
+  },
+  {
+   "kind": "hybrid-search",
+   "category": "retrieval",
+   "name": "Hybrid search"
+  },
+  {
+   "kind": "chunker",
+   "category": "retrieval",
+   "name": "Chunker"
+  },
+  {
+   "kind": "document-loader",
+   "category": "retrieval",
+   "name": "Document loader"
+  },
+  {
+   "kind": "knowledge-graph",
+   "category": "retrieval",
+   "name": "Knowledge graph"
+  },
+  {
+   "kind": "relational-db",
+   "category": "data",
+   "name": "Relational DB"
+  },
+  {
+   "kind": "object-storage",
+   "category": "data",
+   "name": "Object storage"
+  },
+  {
+   "kind": "data-warehouse",
+   "category": "data",
+   "name": "Data warehouse"
+  },
+  {
+   "kind": "external-api",
+   "category": "data",
+   "name": "External API"
+  },
+  {
+   "kind": "file",
+   "category": "data",
+   "name": "File"
+  },
+  {
+   "kind": "mcp-server",
+   "category": "tools",
+   "name": "MCP server"
+  },
+  {
+   "kind": "function-tool",
+   "category": "tools",
+   "name": "Function tool"
+  },
+  {
+   "kind": "code-sandbox",
+   "category": "tools",
+   "name": "Code sandbox"
+  },
+  {
+   "kind": "browser-tool",
+   "category": "tools",
+   "name": "Browser tool"
+  },
+  {
+   "kind": "web-search",
+   "category": "tools",
+   "name": "Web search"
+  },
+  {
+   "kind": "short-term-memory",
+   "category": "memory",
+   "name": "Short-term memory"
+  },
+  {
+   "kind": "long-term-memory",
+   "category": "memory",
+   "name": "Long-term memory"
+  },
+  {
+   "kind": "session-store",
+   "category": "memory",
+   "name": "Session store"
+  },
+  {
+   "kind": "guardrails",
+   "category": "security",
+   "name": "Guardrails"
+  },
+  {
+   "kind": "pii-filter",
+   "category": "security",
+   "name": "PII filter"
+  },
+  {
+   "kind": "auth",
+   "category": "security",
+   "name": "Auth"
+  },
+  {
+   "kind": "secrets-manager",
+   "category": "security",
+   "name": "Secrets manager"
+  },
+  {
+   "kind": "evals",
+   "category": "quality",
+   "name": "Evals"
+  },
+  {
+   "kind": "tracing",
+   "category": "quality",
+   "name": "Tracing"
+  },
+  {
+   "kind": "feedback-loop",
+   "category": "quality",
+   "name": "Feedback loop"
+  },
+  {
+   "kind": "prompt-registry",
+   "category": "quality",
+   "name": "Prompt registry"
+  },
+  {
+   "kind": "end-user",
+   "category": "human",
+   "name": "End user"
+  },
+  {
+   "kind": "human-in-the-loop",
+   "category": "human",
+   "name": "Human in the loop"
+  },
+  {
+   "kind": "admin",
+   "category": "human",
+   "name": "Admin"
+  },
+  {
+   "kind": "box",
+   "category": "generic",
+   "name": "Box"
+  },
+  {
+   "kind": "note",
+   "category": "generic",
+   "name": "Note"
+  }
+ ],
+ "vendors": [
+  {
+   "id": "airtable",
+   "name": "Airtable"
+  },
+  {
+   "id": "anthropic",
+   "name": "Anthropic"
+  },
+  {
+   "id": "apache-airflow",
+   "name": "Apache Airflow"
+  },
+  {
+   "id": "apache-kafka",
+   "name": "Apache Kafka"
+  },
+  {
+   "id": "auth0",
+   "name": "Auth0"
+  },
+  {
+   "id": "aws",
+   "name": "AWS"
+  },
+  {
+   "id": "azure",
+   "name": "Microsoft Azure"
+  },
+  {
+   "id": "clerk",
+   "name": "Clerk"
+  },
+  {
+   "id": "clickhouse",
+   "name": "ClickHouse"
+  },
+  {
+   "id": "cloudflare",
+   "name": "Cloudflare"
+  },
+  {
+   "id": "cohere",
+   "name": "Cohere"
+  },
+  {
+   "id": "databricks",
+   "name": "Databricks"
+  },
+  {
+   "id": "datadog",
+   "name": "Datadog"
+  },
+  {
+   "id": "deepseek",
+   "name": "DeepSeek"
+  },
+  {
+   "id": "discord",
+   "name": "Discord"
+  },
+  {
+   "id": "docker",
+   "name": "Docker"
+  },
+  {
+   "id": "drizzle",
+   "name": "Drizzle"
+  },
+  {
+   "id": "elasticsearch",
+   "name": "Elasticsearch"
+  },
+  {
+   "id": "fastapi",
+   "name": "FastAPI"
+  },
+  {
+   "id": "firebase",
+   "name": "Firebase"
+  },
+  {
+   "id": "github",
+   "name": "GitHub"
+  },
+  {
+   "id": "google",
+   "name": "Google"
+  },
+  {
+   "id": "google-bigquery",
+   "name": "Google BigQuery"
+  },
+  {
+   "id": "google-cloud",
+   "name": "Google Cloud"
+  },
+  {
+   "id": "google-gemini",
+   "name": "Google Gemini"
+  },
+  {
+   "id": "grafana",
+   "name": "Grafana"
+  },
+  {
+   "id": "groq",
+   "name": "Groq"
+  },
+  {
+   "id": "hugging-face",
+   "name": "Hugging Face"
+  },
+  {
+   "id": "hubspot",
+   "name": "HubSpot"
+  },
+  {
+   "id": "intercom",
+   "name": "Intercom"
+  },
+  {
+   "id": "jira",
+   "name": "Jira"
+  },
+  {
+   "id": "kubernetes",
+   "name": "Kubernetes"
+  },
+  {
+   "id": "langchain",
+   "name": "LangChain"
+  },
+  {
+   "id": "langfuse",
+   "name": "Langfuse"
+  },
+  {
+   "id": "linear",
+   "name": "Linear"
+  },
+  {
+   "id": "llamaindex",
+   "name": "LlamaIndex"
+  },
+  {
+   "id": "meta",
+   "name": "Meta"
+  },
+  {
+   "id": "milvus",
+   "name": "Milvus"
+  },
+  {
+   "id": "minio",
+   "name": "MinIO"
+  },
+  {
+   "id": "mistral",
+   "name": "Mistral AI"
+  },
+  {
+   "id": "mlflow",
+   "name": "MLflow"
+  },
+  {
+   "id": "modal",
+   "name": "Modal"
+  },
+  {
+   "id": "mongodb",
+   "name": "MongoDB"
+  },
+  {
+   "id": "mysql",
+   "name": "MySQL"
+  },
+  {
+   "id": "n8n",
+   "name": "n8n"
+  },
+  {
+   "id": "neon",
+   "name": "Neon"
+  },
+  {
+   "id": "nextjs",
+   "name": "Next.js"
+  },
+  {
+   "id": "nodejs",
+   "name": "Node.js"
+  },
+  {
+   "id": "notion",
+   "name": "Notion"
+  },
+  {
+   "id": "nvidia",
+   "name": "NVIDIA"
+  },
+  {
+   "id": "ollama",
+   "name": "Ollama"
+  },
+  {
+   "id": "openai",
+   "name": "OpenAI"
+  },
+  {
+   "id": "openrouter",
+   "name": "OpenRouter"
+  },
+  {
+   "id": "perplexity",
+   "name": "Perplexity"
+  },
+  {
+   "id": "pinecone",
+   "name": "Pinecone"
+  },
+  {
+   "id": "postgresql",
+   "name": "PostgreSQL"
+  },
+  {
+   "id": "pgvector",
+   "name": "pgvector"
+  },
+  {
+   "id": "posthog",
+   "name": "PostHog"
+  },
+  {
+   "id": "prisma",
+   "name": "Prisma"
+  },
+  {
+   "id": "python",
+   "name": "Python"
+  },
+  {
+   "id": "pytorch",
+   "name": "PyTorch"
+  },
+  {
+   "id": "qdrant",
+   "name": "Qdrant"
+  },
+  {
+   "id": "rabbitmq",
+   "name": "RabbitMQ"
+  },
+  {
+   "id": "react",
+   "name": "React"
+  },
+  {
+   "id": "redis",
+   "name": "Redis"
+  },
+  {
+   "id": "replicate",
+   "name": "Replicate"
+  },
+  {
+   "id": "salesforce",
+   "name": "Salesforce"
+  },
+  {
+   "id": "sentry",
+   "name": "Sentry"
+  },
+  {
+   "id": "slack",
+   "name": "Slack"
+  },
+  {
+   "id": "snowflake",
+   "name": "Snowflake"
+  },
+  {
+   "id": "sqlite",
+   "name": "SQLite"
+  },
+  {
+   "id": "stripe",
+   "name": "Stripe"
+  },
+  {
+   "id": "supabase",
+   "name": "Supabase"
+  },
+  {
+   "id": "telegram",
+   "name": "Telegram"
+  },
+  {
+   "id": "temporal",
+   "name": "Temporal"
+  },
+  {
+   "id": "twilio",
+   "name": "Twilio"
+  },
+  {
+   "id": "typescript",
+   "name": "TypeScript"
+  },
+  {
+   "id": "upstash",
+   "name": "Upstash"
+  },
+  {
+   "id": "vercel",
+   "name": "Vercel"
+  },
+  {
+   "id": "weaviate",
+   "name": "Weaviate"
+  },
+  {
+   "id": "weights-and-biases",
+   "name": "Weights & Biases"
+  },
+  {
+   "id": "whatsapp",
+   "name": "WhatsApp"
+  },
+  {
+   "id": "xai",
+   "name": "xAI"
+  },
+  {
+   "id": "zapier",
+   "name": "Zapier"
+  },
+  {
+   "id": "zendesk",
+   "name": "Zendesk"
+  }
+ ]
+}
