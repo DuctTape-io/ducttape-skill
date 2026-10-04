@@ -1,5 +1,5 @@
 {
- "skillVersion": "1.0.0",
+ "skillVersion": "1.0.1",
  "blocks": [
   {
    "kind": "web-app",

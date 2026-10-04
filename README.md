@@ -18,7 +18,7 @@ Claude works on drafts only. Publishing and deleting stay with you in the app.
 Copy the skill into your skills folder:
 
 ```sh
-git clone https://github.com/theducttapeio/ducttape-skill.git
+git clone https://github.com/DuctTape-io/ducttape-skill.git
 mkdir -p ~/.claude/skills
 cp -r ducttape-skill/skills/ducttape ~/.claude/skills/
 ```
@@ -27,7 +27,7 @@ Claude uses it as soon as a diagram comes up.
 
 ### Claude app
 
-Download `ducttape-skill.zip` from the [latest release](https://github.com/theducttapeio/ducttape-skill/releases/latest) or from [theducttape.io/claude-skill](https://theducttape.io/claude-skill) and upload it in the settings, in the skills section. Skills need code execution there.
+Download `ducttape-skill.zip` from the [latest release](https://github.com/DuctTape-io/ducttape-skill/releases/latest) or from [theducttape.io/claude-skill](https://theducttape.io/claude-skill) and upload it in the settings, in the skills section. Skills need code execution there.
 
 ## Connect your account (optional)
 
