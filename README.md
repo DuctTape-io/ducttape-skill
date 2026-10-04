@@ -1,10 +1,18 @@
-# Ask Claude for the architecture. Get a diagram you can share.
+<p align="center">
+  <a href="https://theducttape.io"><img src="docs/banner.png" alt="DuctTape.io: Ask Claude for the architecture. Get a diagram you can share." width="100%"></a>
+</p>
+
+# DuctTape.io skill for Claude
+
+**Ask Claude for the architecture. Get a diagram you can share.**
 
 Your AI stack lives in code, in config files and in three people's heads. This skill lets Claude turn it into a real architecture diagram on [DuctTape.io](https://theducttape.io): typed blocks, labelled connections, one link for everyone who needs to understand it.
 
-[![A RAG support agent drawn on DuctTape.io](docs/rag-support-agent.png)](https://theducttape.io/d/HNnyikUTbawl)
-
 No boxes to drag, no arrows to straighten. You describe or point at the code, Claude draws.
+
+<p align="center">
+  <img src="docs/how.png" alt="How it works: 1 Ask Claude, 2 Claude drafts the diagram from typed blocks, 3 you share one link" width="100%">
+</p>
 
 ## What you can ask
 
@@ -27,6 +35,10 @@ Typical architectures are built in: RAG, agents with tools, gateways with fallba
 Each one becomes its own diagram. Decide with pictures instead of paragraphs.
 
 ## What comes out
+
+[![A RAG support agent drawn on DuctTape.io: customer, support chat, support agent, guardrails, LLM, knowledge base and the ingestion path](docs/rag-support-agent.png)](https://theducttape.io/d/HNnyikUTbawl)
+
+<p align="center"><sub>A real result. Click it to open the interactive diagram.</sub></p>
 
 - **A diagram that knows what it shows.** 56 block types across 13 categories, from LLM, vector DB and agent to MCP server, guardrails and human in the loop. Every block knows what it is, so diagrams stay consistent and readable.
 - **Your vendors, where they belong.** 85 vendors in the catalog. Claude names one only where your system really uses it.
@@ -87,6 +99,10 @@ node skills/ducttape/scripts/prepare-diagram.mjs graph.json "My diagram.json"
 `graph.json` holds `{ "nodes": [{ "id", "kind", "label"? }], "edges": [{ "source", "target", "label"? }] }`.
 
 ## See what a result looks like
+
+<p align="center">
+  <a href="https://theducttape.io/examples"><img src="docs/gallery.png" alt="Three typical architectures: RAG support agent, multi-agent workflow, LLM gateway with fallback" width="100%"></a>
+</p>
 
 Ten reference architectures as interactive diagrams: [theducttape.io/examples](https://theducttape.io/examples).
 
