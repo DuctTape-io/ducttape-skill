@@ -61,3 +61,7 @@ node skills/ducttape/scripts/prepare-diagram.mjs graph.json "My diagram.json"
 The version is in the front matter of `SKILL.md`. This repository mirrors the skill that ships with the app; changes are made there and published here.
 
 Vendor names in the catalog are trademarks of their respective owners.
+
+## License
+
+[MIT](LICENSE), copyright TheDuctTape.io.
