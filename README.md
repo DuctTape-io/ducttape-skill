@@ -31,7 +31,7 @@ Each one becomes its own diagram. Decide with pictures instead of paragraphs.
 - **A diagram that knows what it shows.** 56 block types across 13 categories, from LLM, vector DB and agent to MCP server, guardrails and human in the loop. Every block knows what it is, so diagrams stay consistent and readable.
 - **Your vendors, where they belong.** 85 vendors in the catalog. Claude names one only where your system really uses it.
 - **A link into the editor.** Move things around, add detail, change your mind. It is your diagram.
-- **One fixed link to share.** Publish when you are ready. Whoever opens the link needs no account, and the link stays current when the diagram changes.
+- **One fixed link to share.** Publish when you are ready. Whoever opens the link needs no account, and the same link shows the new version whenever you publish an update.
 
 ## Two ways to work
 
