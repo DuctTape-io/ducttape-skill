@@ -1,5 +1,10 @@
 <p align="center">
-  <a href="https://theducttape.io"><img src="docs/banner.png" alt="DuctTape.io: Ask Claude for the architecture. Get a diagram you can share." width="100%"></a>
+  <a href="https://theducttape.io">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/banner-dark.png">
+    <img src="docs/banner.png" alt="DuctTape.io: Ask Claude for the architecture. Get a diagram you can share." width="100%">
+  </picture>
+  </a>
 </p>
 
 # DuctTape.io skill for Claude
@@ -11,7 +16,10 @@ Your AI stack lives in code, in config files and in three people's heads. This s
 No boxes to drag, no arrows to straighten. You describe or point at the code, Claude draws.
 
 <p align="center">
-  <img src="docs/how.png" alt="How it works: 1 Ask Claude, 2 Claude drafts the diagram from typed blocks, 3 you share one link" width="100%">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/how-dark.png">
+    <img src="docs/how.png" alt="How it works: 1 Ask Claude, 2 Claude drafts the diagram from typed blocks, 3 you share one link" width="100%">
+  </picture>
 </p>
 
 ## What you can ask
@@ -36,7 +44,14 @@ Each one becomes its own diagram. Decide with pictures instead of paragraphs.
 
 ## What comes out
 
-[![A RAG support agent drawn on DuctTape.io: customer, support chat, support agent, guardrails, LLM, knowledge base and the ingestion path](docs/rag-support-agent.png)](https://theducttape.io/d/HNnyikUTbawl)
+<p align="center">
+  <a href="https://theducttape.io/d/HNnyikUTbawl">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/rag-support-agent-dark.png">
+    <img src="docs/rag-support-agent.png" alt="A RAG support agent drawn on DuctTape.io: customer, support chat, support agent, guardrails, LLM, knowledge base and the ingestion path" width="100%">
+  </picture>
+  </a>
+</p>
 
 <p align="center"><sub>A real result. Click it to open the interactive diagram.</sub></p>
 
@@ -101,7 +116,12 @@ node skills/ducttape/scripts/prepare-diagram.mjs graph.json "My diagram.json"
 ## See what a result looks like
 
 <p align="center">
-  <a href="https://theducttape.io/examples"><img src="docs/gallery.png" alt="Three typical architectures: RAG support agent, multi-agent workflow, LLM gateway with fallback" width="100%"></a>
+  <a href="https://theducttape.io/examples">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/gallery-dark.png">
+    <img src="docs/gallery.png" alt="Three typical architectures: RAG support agent, multi-agent workflow, LLM gateway with fallback" width="100%">
+  </picture>
+  </a>
 </p>
 
 Ten reference architectures as interactive diagrams: [theducttape.io/examples](https://theducttape.io/examples).
