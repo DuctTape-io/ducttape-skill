@@ -1,21 +1,51 @@
-# DuctTape.io skill for Claude
+# Ask Claude for the architecture. Get a diagram you can share.
 
-A skill that teaches Claude to work with [DuctTape.io](https://theducttape.io), the editor for AI architecture diagrams.
+Your AI stack lives in code, in config files and in three people's heads. This skill lets Claude turn it into a real architecture diagram on [DuctTape.io](https://theducttape.io): typed blocks, labelled connections, one link for everyone who needs to understand it.
 
-With it Claude can
+[![A RAG support agent drawn on DuctTape.io](docs/rag-support-agent.png)](https://theducttape.io/d/HNnyikUTbawl)
 
-- draw an architecture from code or from a description,
-- keep an existing diagram in step with the code and say what changes first,
-- explain a diagram and review it for gaps such as missing guardrails, tracing or a fallback,
-- write a diagram file for "Import from JSON" when no connection to your account is set up.
+No boxes to drag, no arrows to straighten. You describe or point at the code, Claude draws.
 
-Claude works on drafts only. Publishing and deleting stay with you in the app.
+## What you can ask
 
-## Install
+**"Draw the architecture of this repository."**
+Claude reads the entry points, model calls, vector stores, queues and tools, and hands you a diagram of how a request really flows.
+
+**"We added a reranker and a fallback model. Update the diagram."**
+Claude reads the existing diagram, tells you what will change, and updates the draft once you say go. The diagram stops being the thing nobody maintains.
+
+**"Review this: what is missing?"**
+A second pair of eyes for guardrails, tracing, fallbacks, auth, secrets, evals and where personal data travels. You get the gaps that matter for this system, not a generic checklist.
+
+**"Explain this diagram to a new teammate."**
+Claude walks along the path of a request, from the user to the answer.
+
+**"Give me a starting point for a RAG with an agent on top."**
+Typical architectures are built in: RAG, agents with tools, gateways with fallback. Start from one and make it yours.
+
+**"Sketch three options so we can compare them."**
+Each one becomes its own diagram. Decide with pictures instead of paragraphs.
+
+## What comes out
+
+- **A diagram that knows what it shows.** 56 block types across 13 categories, from LLM, vector DB and agent to MCP server, guardrails and human in the loop. Every block knows what it is, so diagrams stay consistent and readable.
+- **Your vendors, where they belong.** 85 vendors in the catalog. Claude names one only where your system really uses it.
+- **A link into the editor.** Move things around, add detail, change your mind. It is your diagram.
+- **One fixed link to share.** Publish when you are ready. Whoever opens the link needs no account, and the link stays current when the diagram changes.
+
+## Two ways to work
+
+| | With a connection | Without |
+|---|---|---|
+| Setup | An access token and one command | None |
+| What Claude does | Creates and updates drafts right in your account | Writes a diagram file |
+| What you get | A link to the editor | A file for "Import from JSON" |
+
+Either way Claude works on drafts only. Publishing and deleting stay with you.
+
+## Install in two minutes
 
 ### Claude Code
-
-Copy the skill into your skills folder:
 
 ```sh
 git clone https://github.com/DuctTape-io/ducttape-skill.git
@@ -23,32 +53,32 @@ mkdir -p ~/.claude/skills
 cp -r ducttape-skill/skills/ducttape ~/.claude/skills/
 ```
 
-Claude uses it as soon as a diagram comes up.
+That is it. Claude picks the skill up as soon as a diagram comes up.
 
 ### Claude app
 
-Download `ducttape-skill.zip` from the [latest release](https://github.com/DuctTape-io/ducttape-skill/releases/latest) or from [theducttape.io/claude-skill](https://theducttape.io/claude-skill) and upload it in the settings, in the skills section. Skills need code execution there.
+Download `ducttape-skill.zip` from the [latest release](https://github.com/DuctTape-io/ducttape-skill/releases/latest) and upload it in the settings, in the skills section. Skills need code execution there.
 
-## Connect your account (optional)
+### Connect your account (optional, recommended)
 
-With a connection Claude creates diagrams right in your account and hands you the link to the editor. Create an access token in the [settings](https://theducttape.io/app/settings) and add the MCP server:
+Create an access token in the [settings](https://theducttape.io/app/settings) of your free DuctTape.io account, then:
 
 ```sh
 claude mcp add --transport http ducttape https://theducttape.io/api/mcp --header "Authorization: Bearer dtp_..."
 ```
 
-Without a connection Claude writes a JSON file. Open it in the dashboard with "Import from JSON".
+From now on "draw this" ends with a link instead of a file. The full guide is at [theducttape.io/claude-skill](https://theducttape.io/claude-skill).
 
 ## What is inside
 
 | Path | Content |
 |---|---|
 | `skills/ducttape/SKILL.md` | Workflows and limits |
-| `skills/ducttape/reference/modelling.md` | Which block for what, edges, typical architectures, review checklist |
-| `skills/ducttape/reference/catalog.json` | Block kinds and vendor ids, generated from the app's catalog |
-| `skills/ducttape/scripts/prepare-diagram.mjs` | Validates a diagram file and arranges the blocks. Node.js 18 or later, no dependencies |
+| `skills/ducttape/reference/modelling.md` | Which block for what, how to label connections, typical architectures, the review checklist |
+| `skills/ducttape/reference/catalog.json` | Block types and vendors, generated from the app's own catalog |
+| `skills/ducttape/scripts/prepare-diagram.mjs` | Checks a diagram file and arranges the blocks. Node.js 18 or later, no dependencies |
 
-Try the script on its own:
+The script also works on its own:
 
 ```sh
 node skills/ducttape/scripts/prepare-diagram.mjs graph.json "My diagram.json"
@@ -56,12 +86,12 @@ node skills/ducttape/scripts/prepare-diagram.mjs graph.json "My diagram.json"
 
 `graph.json` holds `{ "nodes": [{ "id", "kind", "label"? }], "edges": [{ "source", "target", "label"? }] }`.
 
-## Versions
+## See what a result looks like
+
+Ten reference architectures as interactive diagrams: [theducttape.io/examples](https://theducttape.io/examples).
+
+## Versions and license
 
 The version is in the front matter of `SKILL.md`. This repository mirrors the skill that ships with the app; changes are made there and published here.
 
-Vendor names in the catalog are trademarks of their respective owners.
-
-## License
-
-[MIT](LICENSE), copyright TheDuctTape.io.
+[MIT](LICENSE), copyright TheDuctTape.io. Vendor names in the catalog are trademarks of their respective owners.
