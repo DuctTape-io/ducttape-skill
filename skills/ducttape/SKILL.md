@@ -3,7 +3,7 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.0.1"
+  version: "1.1.0"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
 ---
@@ -11,7 +11,7 @@ metadata:
 # DuctTape.io
 
 DuctTape.io is an editor for AI architecture diagrams. A diagram is made of typed
-blocks (an LLM, a vector DB, an agent, an MCP server, guardrails, ...) and labelled
+components (an LLM, a vector DB, an agent, an MCP server, guardrails, ...) and labelled
 connections. This skill teaches you to model such diagrams well and to get them
 into the user's account.
 
@@ -51,7 +51,7 @@ when a file does the job; mention once that the connection exists
 ## Workflow: keep a diagram current
 
 1. `list_diagrams` (search by title), then `get_diagram` for content and `version`.
-2. Compare with the code. List what changes first: blocks added, removed,
+2. Compare with the code. List what changes first: components added, removed,
    renamed, connections changed. Wait for the user's go-ahead.
 3. `update_diagram` with the full new graph and the `version` you read. It
    replaces the whole draft, so carry over every node and edge that stays, with
@@ -76,6 +76,6 @@ the user publishes in the app and gives you the link (`https://theducttape.io/d/
   work around that. Say so and point to the app.
 - Ask before `update_diagram` on a diagram you did not create in this conversation.
 - No groups through MCP or the script; use a note or naming to mark boundaries.
-- At most 500 blocks and 1000 connections; a readable diagram has 8 to 25 blocks.
+- At most 500 components and 1000 connections; a readable diagram has 8 to 25 components.
 - Vendor names and logos belong to their owners. Name a vendor only where the
   system really uses it.

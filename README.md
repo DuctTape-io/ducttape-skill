@@ -11,14 +11,14 @@
 
 **Ask Claude for the architecture. Get a diagram you can share.**
 
-Your AI stack lives in code, in config files and in three people's heads. This skill lets Claude turn it into a real architecture diagram on [DuctTape.io](https://theducttape.io): typed blocks, labelled connections, one link for everyone who needs to understand it.
+Your AI stack lives in code, in config files and in three people's heads. This skill lets Claude turn it into a real architecture diagram on [DuctTape.io](https://theducttape.io): typed components, labelled connections, one link for everyone who needs to understand it.
 
 No boxes to drag, no arrows to straighten. You describe or point at the code, Claude draws.
 
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/how-dark.png">
-    <img src="docs/how.png" alt="How it works: 1 Ask Claude, 2 Claude drafts the diagram from typed blocks, 3 you share one link" width="100%">
+    <img src="docs/how.png" alt="How it works: 1 Ask Claude, 2 Claude drafts the diagram from typed components, 3 you share one link" width="100%">
   </picture>
 </p>
 
@@ -55,8 +55,8 @@ Each one becomes its own diagram. Decide with pictures instead of paragraphs.
 
 <p align="center"><sub>A real result. Click it to open the interactive diagram.</sub></p>
 
-- **A diagram that knows what it shows.** 56 block types across 13 categories, from LLM, vector DB and agent to MCP server, guardrails and human in the loop. Every block knows what it is, so diagrams stay consistent and readable.
-- **Your vendors, where they belong.** 85 vendors in the catalog. Claude names one only where your system really uses it.
+- **A diagram that knows what it shows.** Typed components from LLM, vector DB and agent to MCP server, guardrails and human in the loop. Every component knows what it is, so diagrams stay consistent and readable.
+- **Your vendors, where they belong.** The catalog knows the vendors of the AI stack. Claude names one only where your system really uses it.
 - **A link into the editor.** Move things around, add detail, change your mind. It is your diagram.
 - **One fixed link to share.** Publish when you are ready. Whoever opens the link needs no account, and the same link shows the new version whenever you publish an update.
 
@@ -101,9 +101,9 @@ From now on "draw this" ends with a link instead of a file. The full guide is at
 | Path | Content |
 |---|---|
 | `skills/ducttape/SKILL.md` | Workflows and limits |
-| `skills/ducttape/reference/modelling.md` | Which block for what, how to label connections, typical architectures, the review checklist |
-| `skills/ducttape/reference/catalog.json` | Block types and vendors, generated from the app's own catalog |
-| `skills/ducttape/scripts/prepare-diagram.mjs` | Checks a diagram file and arranges the blocks. Node.js 18 or later, no dependencies |
+| `skills/ducttape/reference/modelling.md` | Which component for what, how to label connections, typical architectures, the review checklist |
+| `skills/ducttape/reference/catalog.json` | Component kinds and vendors, generated from the app's own catalog |
+| `skills/ducttape/scripts/prepare-diagram.mjs` | Checks a diagram file and arranges the components. Node.js 18 or later, no dependencies |
 
 The script also works on its own:
 
@@ -124,7 +124,7 @@ node skills/ducttape/scripts/prepare-diagram.mjs graph.json "My diagram.json"
   </a>
 </p>
 
-Ten reference architectures as interactive diagrams: [theducttape.io/examples](https://theducttape.io/examples).
+Reference architectures as interactive diagrams: [theducttape.io/examples](https://theducttape.io/examples).
 
 ## Versions and license
 

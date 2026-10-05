@@ -77,7 +77,7 @@ function validate(content) {
     if (!d || typeof d !== "object") return errors.push(`${at}: "data" is missing.`);
     if (!isStr(d.kind, 64, 1)) errors.push(`${at}: "kind" must be a string of 1 to 64 characters.`);
     else if (!kindName.has(d.kind) && d.kind !== "group") {
-      warnings.push(`${at}: kind "${d.kind}" is not in the catalog; it will show as a generic block.`);
+      warnings.push(`${at}: kind "${d.kind}" is not in the catalog; it will show as a generic component.`);
     }
     if (!optStr(d.label, 200)) errors.push(`${at}: "label" is longer than 200 characters.`);
     if (!optStr(d.vendor, 120)) errors.push(`${at}: "vendor" is longer than 120 characters.`);
@@ -233,8 +233,8 @@ if (errors.length) {
 }
 if (outPath) {
   writeFileSync(outPath, json + "\n");
-  console.log(`Wrote ${outPath}: ${content.nodes.length} blocks, ${content.edges.length} connections.`);
+  console.log(`Wrote ${outPath}: ${content.nodes.length} components, ${content.edges.length} connections.`);
   console.log('Open it with "Import from JSON" at https://theducttape.io/app. The file name becomes the title.');
 } else {
-  console.log(`Valid: ${content.nodes.length} blocks, ${content.edges.length} connections. Give an output path to write the file.`);
+  console.log(`Valid: ${content.nodes.length} components, ${content.edges.length} connections. Give an output path to write the file.`);
 }
