@@ -3,7 +3,8 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
+  released: "2026-10-05"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
 ---
@@ -55,7 +56,8 @@ when a file does the job; mention once that the connection exists
    renamed, connections changed. Wait for the user's go-ahead.
 3. `update_diagram` with the full new graph and the `version` you read. It
    replaces the whole draft, so carry over every node and edge that stays, with
-   the same ids. If the version is refused, read again and redo the comparison.
+   the same ids and the same `display`. If the version is refused, read again
+   and redo the comparison.
 
 ## Workflow: explain or review
 
@@ -76,6 +78,9 @@ the user publishes in the app and gives you the link (`https://theducttape.io/d/
   work around that. Say so and point to the app.
 - Ask before `update_diagram` on a diagram you did not create in this conversation.
 - No groups through MCP or the script; use a note or naming to mark boundaries.
+- No new images: the user uploads them in the editor. `get_diagram` returns them
+  as nodes of kind `image`; pass these on to `update_diagram` with their id
+  unchanged, or the image leaves the draft.
 - At most 500 components and 1000 connections; a readable diagram has 8 to 25 components.
 - Vendor names and logos belong to their owners. Name a vendor only where the
   system really uses it.

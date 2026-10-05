@@ -10,6 +10,7 @@
 | `vendor` | Vendor id from the catalog (`anthropic`, `pinecone`). Only when it is really used. |
 | `model` | Concrete model, for components of category `model` ("Claude Opus 5"). |
 | `description` | One or two sentences: what it does here, limits, config worth knowing. |
+| `display` | How the component is drawn: `block` (a card, the default) or `icon` (a large icon with the labels below, narrower). Leave out for `block`. Notes have no display. |
 
 Edges: `source`, `target`, optional `label`.
 
@@ -41,6 +42,7 @@ Edges: `source`, `target`, optional `label`.
 - One diagram answers one question ("how does a request flow?", "how are documents ingested?"). Two questions are two diagrams.
 - 8 to 25 components read well. Above that, merge details (three similar tools become one `function-tool` with a description) or split.
 - Reading direction is left to right: who asks on the left, models and data on the right. The layout follows the edges, so the first edge between two components should point in reading direction.
+- Display: stay with `block` unless the user asks for icons or the diagram should read like a classic architecture diagram; then set `display: "icon"` on every component, not on a few. Colour, category, vendor and model show in both.
 - Groups mark boundaries (a VPC, a team, a vendor). They are placed by hand in the editor; through MCP and the script use a `note` instead ("Everything right of the gateway runs in the EU region").
 
 ## Typical architectures

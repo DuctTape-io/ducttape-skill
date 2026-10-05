@@ -6,15 +6,18 @@
 //   node prepare-diagram.mjs graph.json "My title.json" [--direction LR|TB]
 //
 // graph.json is either
-//   { "nodes": [{ "id", "kind", "label"?, "vendor"?, "model"?, "description"?, "href"? }],
+//   { "nodes": [{ "id", "kind", "label"?, "vendor"?, "model"?, "description"?, "href"?, "display"? }],
 //     "edges": [{ "source", "target", "label"? }] }
 // or a finished diagram file (with "schemaVersion"), which is only validated.
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const LIMITS = { nodes: 500, edges: 1000, bytes: 512 * 1024 };
-const SIZE = { aiNode: { width: 200, height: 56 }, note: { width: 200, height: 112 } };
+const LIMITS = { nodes: 500, edges: 1000, bytes: 512 * 1024, images: 20 };
+// Shape of an address in the app's own file storage (ASSET_URL in the app).
+const IMAGE_URL = /^https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\/assets\/[A-Za-z0-9_-]+\.(?:png|jpg|webp|svg)$/;
+const SIZE = { note: { width: 200, height: 112 } };
+const DISPLAYS = ["block", "icon"];
 const GAP = { rank: 64, node: 32 };
 
 const args = process.argv.slice(2);
@@ -53,6 +56,14 @@ const isHttp = (v) => {
   }
 };
 
+/** Size of a node for the layout; a component as a block or as an icon with its labels below. */
+function sizeOf(n) {
+  if (n.type === "note") return SIZE.note;
+  if (n.display !== "icon") return { width: 200, height: n.model ? 72 : 56 };
+  const label = n.label ?? kindName.get(n.kind) ?? n.kind ?? "";
+  return { width: 136, height: 86 + (label.length > 16 ? 36 : 18) + (n.vendor || n.model ? 16 : 0) };
+}
+
 /** Checks a finished diagram the way the server does on import. */
 function validate(content) {
   if (content.schemaVersion !== 1) errors.push("schemaVersion must be 1.");
@@ -69,14 +80,16 @@ function validate(content) {
     if (!isStr(n.id, 64, 1)) errors.push(`${at}: "id" must be a string of 1 to 64 characters.`);
     else if (ids.has(n.id)) errors.push(`${at}: id is used twice.`);
     else ids.add(n.id);
-    if (!["aiNode", "group", "note"].includes(n.type)) errors.push(`${at}: "type" must be aiNode, group or note.`);
+    if (!["aiNode", "group", "note", "imageNode"].includes(n.type)) {
+      errors.push(`${at}: "type" must be aiNode, group, note or imageNode.`);
+    }
     if (!n.position || typeof n.position.x !== "number" || typeof n.position.y !== "number") {
       errors.push(`${at}: "position" needs numeric x and y.`);
     }
     const d = n.data;
     if (!d || typeof d !== "object") return errors.push(`${at}: "data" is missing.`);
     if (!isStr(d.kind, 64, 1)) errors.push(`${at}: "kind" must be a string of 1 to 64 characters.`);
-    else if (!kindName.has(d.kind) && d.kind !== "group") {
+    else if (!kindName.has(d.kind) && d.kind !== "group" && n.type !== "imageNode") {
       warnings.push(`${at}: kind "${d.kind}" is not in the catalog; it will show as a generic component.`);
     }
     if (!optStr(d.label, 200)) errors.push(`${at}: "label" is longer than 200 characters.`);
@@ -86,8 +99,30 @@ function validate(content) {
     }
     if (!optStr(d.model, 120)) errors.push(`${at}: "model" is longer than 120 characters.`);
     if (!optStr(d.description, 2000)) errors.push(`${at}: "description" is longer than 2000 characters.`);
+    if (d.display !== undefined && !DISPLAYS.includes(d.display)) {
+      errors.push(`${at}: "display" must be block or icon.`);
+    }
     if (d.href != null && !isHttp(d.href)) errors.push(`${at}: "href" must be an http or https link.`);
+    // An image the user placed in the editor: passed through as it is, never made up.
+    if ((n.type === "imageNode") !== (d.image !== undefined)) {
+      errors.push(`${at}: an image node needs "image", and only an image node has one.`);
+    } else if (d.image !== undefined) {
+      const im = d.image;
+      const px = (v) => Number.isInteger(v) && v > 0 && v <= 20000;
+      if (!im || typeof im !== "object") errors.push(`${at}: "image" is not an object.`);
+      else {
+        if (!isStr(im.assetId, 36, 36)) errors.push(`${at}: "image.assetId" must be the id from the editor.`);
+        if (!isStr(im.url, 300) || !IMAGE_URL.test(im.url)) {
+          errors.push(`${at}: "image.url" must be an image of the DuctTape.io image library; other addresses are refused.`);
+        }
+        if (!px(im.width) || !px(im.height)) errors.push(`${at}: "image.width" and "image.height" must be whole numbers.`);
+        if (!optStr(im.alt, 300)) errors.push(`${at}: "image.alt" is longer than 300 characters.`);
+      }
+    }
   });
+  if (content.nodes.filter((n) => n && n.type === "imageNode").length > LIMITS.images) {
+    errors.push(`More than ${LIMITS.images} images.`);
+  }
   content.edges.forEach((e, i) => {
     const at = `edges[${i}]`;
     if (!e || typeof e !== "object") return errors.push(`${at}: not an object.`);
@@ -152,7 +187,7 @@ function layout(nodes, edges) {
     layer.forEach((id, i) => order.set(id, i));
   });
 
-  const size = new Map(nodes.map((n) => [n.id, SIZE[n.type] ?? SIZE.aiNode]));
+  const size = new Map(nodes.map((n) => [n.id, sizeOf(n)]));
   const breadth = (layer) =>
     layer.reduce((sum, id) => sum + (direction === "LR" ? size.get(id).height : size.get(id).width), 0) +
     GAP.node * (layer.length - 1);
@@ -181,6 +216,7 @@ if (input && typeof input === "object" && "schemaVersion" in input) {
   const nodes = input.nodes.map((n) => ({ ...n, type: n.kind === "note" ? "note" : "aiNode" }));
   for (const n of nodes) {
     if (n.kind === "group") errors.push(`Node "${n.id}": groups are placed by hand in the editor; use a note instead.`);
+    if (n.kind === "image") errors.push(`Node "${n.id}": images are uploaded in the editor and cannot be created here.`);
   }
   const known = new Set(nodes.map((n) => n.id));
   const usable = edges.filter((e) => e && known.has(e.source) && known.has(e.target) && e.source !== e.target);
@@ -203,6 +239,8 @@ if (input && typeof input === "object" && "schemaVersion" in input) {
         background: null,
         icon: null,
         href: n.href ?? null,
+        // Only components have a second display; "block" is the default and is left out.
+        ...(n.type === "aiNode" && n.display !== undefined && n.display !== "block" ? { display: n.display } : {}),
       },
     })),
     edges: edges.map((e, i) => ({
