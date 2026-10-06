@@ -6,9 +6,10 @@
 //   node prepare-diagram.mjs graph.json "My title.json" [--direction LR|TB]
 //
 // graph.json is either
-//   { "nodes": [{ "id", "kind", "label"?, "vendor"?, "model"?, "description"?, "href"?, "display"? }],
+//   { "nodes": [{ "id", "kind", "label"?, "vendor"?, "model"?, "description"?, "href"?, "display"?, "fields"? }],
 //     "edges": [{ "source", "target", "label"? }] }
 // or a finished diagram file (with "schemaVersion"), which is only validated.
+// "fields" are private meta field values: [{ "fieldId", "name", "type", "value" }], see SKILL.md.
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,6 +19,10 @@ const LIMITS = { nodes: 500, edges: 1000, bytes: 512 * 1024, images: 20 };
 const IMAGE_URL = /^https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\/assets\/[A-Za-z0-9_-]+\.(?:png|jpg|webp|svg)$/;
 const SIZE = { note: { width: 200, height: 112 } };
 const DISPLAYS = ["block", "icon"];
+// Meta fields (FIELD_LIMITS and fieldValueFits in the app).
+const FIELD = { types: ["text", "number", "date", "link", "select", "boolean", "file"], perNode: 50, name: 60, text: 2000, link: 2000, option: 80 };
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const DATE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 const GAP = { rank: 64, node: 32 };
 
 const args = process.argv.slice(2);
@@ -55,6 +60,49 @@ const isHttp = (v) => {
     return false;
   }
 };
+
+/** Whether a meta field value fits its type (fieldValueFits in the app); an empty text is allowed. */
+function fieldValueFits(type, value) {
+  switch (type) {
+    case "text":
+      return typeof value === "string" && value.length <= FIELD.text;
+    case "number":
+      return typeof value === "number" && Number.isFinite(value);
+    case "date":
+      return typeof value === "string" && DATE.test(value) && !Number.isNaN(Date.parse(value));
+    case "link":
+      return typeof value === "string" && value.length <= FIELD.link && /^https?:\/\/\S+$/.test(value);
+    case "select":
+      return typeof value === "string" && value.length >= 1 && value.length <= FIELD.option;
+    case "boolean":
+      return typeof value === "boolean";
+    case "file":
+      return typeof value === "string" && UUID.test(value);
+    default:
+      return false;
+  }
+}
+
+/** Checks the meta field values of one node; `at` names the node in messages. */
+function validateFields(at, fields, nodeType) {
+  if (fields === undefined) return;
+  if (!Array.isArray(fields)) return errors.push(`${at}: "fields" must be an array.`);
+  if (fields.length > FIELD.perNode) errors.push(`${at}: more than ${FIELD.perNode} meta field values.`);
+  if (fields.length > 0 && nodeType !== "aiNode" && nodeType !== "imageNode") {
+    errors.push(`${at}: groups and notes carry no meta fields.`);
+  }
+  fields.forEach((f, i) => {
+    const here = `${at}.fields[${i}]`;
+    if (!f || typeof f !== "object") return errors.push(`${here}: not an object.`);
+    if (!isStr(f.fieldId, 36, 36) || !UUID.test(f.fieldId)) errors.push(`${here}: "fieldId" must be a UUID.`);
+    if (!isStr(f.name, FIELD.name, 1)) errors.push(`${here}: "name" must be a string of 1 to ${FIELD.name} characters.`);
+    if (!FIELD.types.includes(f.type)) errors.push(`${here}: "type" must be one of ${FIELD.types.join(", ")}.`);
+    // Not yet filled: an empty string passes for text, link and date (as in the app's schema).
+    else if (!((f.value === "" && ["text", "link", "date"].includes(f.type)) || fieldValueFits(f.type, f.value))) {
+      errors.push(`${here}: the value does not fit the type ${f.type}.`);
+    }
+  });
+}
 
 /** Size of a node for the layout; a component as a block or as an icon with its labels below. */
 function sizeOf(n) {
@@ -103,6 +151,7 @@ function validate(content) {
       errors.push(`${at}: "display" must be block or icon.`);
     }
     if (d.href != null && !isHttp(d.href)) errors.push(`${at}: "href" must be an http or https link.`);
+    validateFields(at, d.fields, n.type);
     // An image the user placed in the editor: passed through as it is, never made up.
     if ((n.type === "imageNode") !== (d.image !== undefined)) {
       errors.push(`${at}: an image node needs "image", and only an image node has one.`);
@@ -241,6 +290,8 @@ if (input && typeof input === "object" && "schemaVersion" in input) {
         href: n.href ?? null,
         // Only components have a second display; "block" is the default and is left out.
         ...(n.type === "aiNode" && n.display !== undefined && n.display !== "block" ? { display: n.display } : {}),
+        // Meta field values travel as given and are checked below with the rest.
+        ...(n.fields !== undefined ? { fields: n.fields } : {}),
       },
     })),
     edges: edges.map((e, i) => ({

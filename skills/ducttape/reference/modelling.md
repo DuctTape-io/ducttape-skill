@@ -11,6 +11,7 @@
 | `model` | Concrete model, for components of category `model` ("Claude Opus 5"). |
 | `description` | One or two sentences: what it does here, limits, config worth knowing. |
 | `display` | How the component is drawn: `block` (a card, the default) or `icon` (a large icon with the labels below, narrower). Leave out for `block`. Notes have no display. |
+| `fields` | Private meta field values (see "Meta fields" in SKILL.md). Over MCP `[{ "fieldId", "value" }]` with ids from `list_fields`; in a JSON file `[{ "fieldId", "name", "type", "value" }]`. At most 50 per component. Notes and groups carry none. |
 
 Edges: `source`, `target`, optional `label`.
 

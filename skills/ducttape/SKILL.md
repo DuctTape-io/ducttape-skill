@@ -3,8 +3,8 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.2.0"
-  released: "2026-10-05"
+  version: "1.3.0"
+  released: "2026-10-07"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
 ---
@@ -19,8 +19,9 @@ into the user's account.
 ## Two ways to deliver a diagram
 
 1. **MCP server connected** (tools `list_catalog`, `list_diagrams`, `get_diagram`,
-   `create_diagram`, `update_diagram`, `rename_diagram` are available): create or
-   update the draft directly. The result you hand to the user is the `editorUrl`.
+   `create_diagram`, `update_diagram`, `rename_diagram`, `list_fields`,
+   `create_field` are available): create or update the draft directly. The
+   result you hand to the user is the `editorUrl`.
 2. **No MCP server**: write a diagram file with `scripts/prepare-diagram.mjs` and
    tell the user to open it with "Import from JSON" in their dashboard at
    https://theducttape.io/app. The file name without `.json` becomes the title.
@@ -56,8 +57,41 @@ when a file does the job; mention once that the connection exists
    renamed, connections changed. Wait for the user's go-ahead.
 3. `update_diagram` with the full new graph and the `version` you read. It
    replaces the whole draft, so carry over every node and edge that stays, with
-   the same ids and the same `display`. If the version is refused, read again
-   and redo the comparison.
+   the same ids, the same `display` and the same `fields`. If the version is
+   refused, read again and redo the comparison.
+
+## Meta fields
+
+A component can carry meta field values: private key-value data such as an
+owner, a monthly cost, a review date, a ticket link or a status. They are shown
+in the editor only, never on a public page, in an export image or in a copy
+someone imports. The user's account has one catalog of fields (name, type,
+whether a component may hold several values); the values at the components
+point at a field by its id and carry a copy of its name and type.
+
+- `get_diagram` returns each component's values as `fields`:
+  `[{ "fieldId", "name", "type", "value" }]`.
+- Set values with `fields` on a node of `create_diagram` or `update_diagram`:
+  `[{ "fieldId", "value" }]`. Call `list_fields` first; the ids come from
+  there. A missing field you may add with `create_field` (name, type `text`,
+  `number`, `date`, `link`, `select` or `boolean`, optional `multiple`,
+  `options`, `description`); reuse a field of the same meaning instead of
+  creating a near duplicate.
+- Values: text is a string (at most 2000 characters), number a number, date
+  `YYYY-MM-DD`, link an `http(s)` address, select one of the field's options,
+  boolean `true` or `false`. An unknown field id, a value that does not fit
+  the type, or two values of a field that is not `multiple` are refused.
+- Attachments (type `file`) are added by the user in the editor. Carry their
+  values over as `get_diagram` returned them; you cannot set new ones.
+- `update_diagram` replaces the whole draft: carry over every component's
+  `fields` or its values are removed. Notes carry no fields.
+- In a JSON file, `data.fields` keeps the copy of name and type, so the file
+  is complete in itself: `[{ "fieldId", "name", "type", "value" }]`. The
+  import matches a value to the user's catalog by id, else by name and type,
+  and creates the field when neither exists. `scripts/prepare-diagram.mjs`
+  checks the values the way the server does.
+- Mention values only when the user asks about them or they matter for the
+  task; do not read them out by default.
 
 ## Workflow: explain or review
 
