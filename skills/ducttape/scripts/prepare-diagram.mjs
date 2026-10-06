@@ -9,7 +9,7 @@
 //   { "nodes": [{ "id", "kind", "label"?, "vendor"?, "model"?, "description"?, "href"?, "display"?, "fields"? }],
 //     "edges": [{ "source", "target", "label"? }] }
 // or a finished diagram file (with "schemaVersion"), which is only validated.
-// "fields" are private meta field values: [{ "fieldId", "name", "type", "value" }], see SKILL.md.
+// "fields" are private meta field values: [{ "fieldId", "name", "type", "value", "shown"? }], see SKILL.md.
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -24,6 +24,8 @@ const FIELD = { types: ["text", "number", "date", "link", "select", "boolean", "
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const DATE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 const GAP = { rank: 64, node: 32 };
+// Shown meta fields: lines under a component's name (FIELD_LINES in the app's lib/node-display.ts).
+const FIELD_LINES = { lineHeight: 14, gap: 4, max: 3 };
 
 const args = process.argv.slice(2);
 const flag = args.indexOf("--direction");
@@ -101,15 +103,25 @@ function validateFields(at, fields, nodeType) {
     else if (!((f.value === "" && ["text", "link", "date"].includes(f.type)) || fieldValueFits(f.type, f.value))) {
       errors.push(`${here}: the value does not fit the type ${f.type}.`);
     }
+    if (f.shown !== undefined && typeof f.shown !== "boolean") errors.push(`${here}: "shown" must be true or false.`);
   });
 }
 
-/** Size of a node for the layout; a component as a block or as an icon with its labels below. */
+/** Room for the shown meta fields: one line per field with a shown value, at most three (fieldLinesHeight in the app). */
+function fieldLinesHeight(fields) {
+  if (!Array.isArray(fields)) return 0;
+  const shown = new Set(fields.filter((f) => f && f.shown === true).map((f) => f.fieldId)).size;
+  const lines = Math.min(FIELD_LINES.max, shown);
+  return lines > 0 ? FIELD_LINES.gap + lines * FIELD_LINES.lineHeight : 0;
+}
+
+/** Size of a node for the layout (aiNodeSize in the app); a component as a block or as an icon with its labels below. */
 function sizeOf(n) {
   if (n.type === "note") return SIZE.note;
-  if (n.display !== "icon") return { width: 200, height: n.model ? 72 : 56 };
+  const fieldRoom = fieldLinesHeight(n.fields);
+  if (n.display !== "icon") return { width: 200, height: (n.model ? 72 : 56) + fieldRoom };
   const label = n.label ?? kindName.get(n.kind) ?? n.kind ?? "";
-  return { width: 136, height: 86 + (label.length > 16 ? 36 : 18) + (n.vendor || n.model ? 16 : 0) };
+  return { width: 136, height: 86 + (label.length > 16 ? 36 : 18) + (n.vendor || n.model ? 16 : 0) + fieldRoom };
 }
 
 /** Checks a finished diagram the way the server does on import. */

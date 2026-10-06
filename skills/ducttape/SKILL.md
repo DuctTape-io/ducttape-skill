@@ -3,7 +3,7 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.3.1"
+  version: "1.4.0"
   released: "2026-10-08"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
@@ -63,16 +63,15 @@ when a file does the job; mention once that the connection exists
 ## Meta fields
 
 A component can carry meta field values: private key-value data such as an
-owner, a monthly cost, a review date, a ticket link or a status. They are shown
-in the editor only, never on a public page, in an export image or in a copy
-someone imports. The user's account has one catalog of fields (name, type,
+owner, a monthly cost, a review date, a ticket link or a status. They stay with
+the owner: never on a public page or in a copy someone imports. The user's account has one catalog of fields (name, type,
 whether a component may hold several values); the values at the components
 point at a field by its id and carry a copy of its name and type.
 
 - `get_diagram` returns each component's values as `fields`:
-  `[{ "fieldId", "name", "type", "value" }]`.
+  `[{ "fieldId", "name", "type", "value", "shown" }]`.
 - Set values with `fields` on a node of `create_diagram` or `update_diagram`:
-  `[{ "fieldId", "value" }]`. Call `list_fields` first; the ids come from
+  `[{ "fieldId", "value", "shown"? }]`. Call `list_fields` first; the ids come from
   there. A missing field you may add with `create_field` (name, type `text`,
   `number`, `date`, `link`, `select` or `boolean`, optional `multiple`,
   `options`, `description`); reuse a field of the same meaning instead of
@@ -87,10 +86,14 @@ point at a field by its id and carry a copy of its name and type.
   or set new ones. To read one, `list_attachments` lists them and
   `get_attachment_url` gives a download link that works for ten minutes;
   do not show that link to anyone else.
+- `shown: true` draws a value under the component's name in the owner's
+  editor, presentation and PNG/SVG exports (at most three lines, then "+n");
+  never on a public page. Missing or `false` means hidden: set it only when the
+  user wants the value visible in the picture, and carry it over on updates.
 - `update_diagram` replaces the whole draft: carry over every component's
-  `fields` or its values are removed. Notes carry no fields.
+  `fields` (with `shown`) or its values are removed. Notes carry no fields.
 - In a JSON file, `data.fields` keeps the copy of name and type, so the file
-  is complete in itself: `[{ "fieldId", "name", "type", "value" }]`. The
+  is complete in itself: `[{ "fieldId", "name", "type", "value", "shown"? }]`. The
   import matches a value to the user's catalog by id, else by name and type,
   and creates the field when neither exists. `scripts/prepare-diagram.mjs`
   checks the values the way the server does.
