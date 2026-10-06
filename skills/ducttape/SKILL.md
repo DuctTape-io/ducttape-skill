@@ -3,8 +3,8 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.3.0"
-  released: "2026-10-07"
+  version: "1.3.1"
+  released: "2026-10-08"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
 ---
@@ -20,7 +20,7 @@ into the user's account.
 
 1. **MCP server connected** (tools `list_catalog`, `list_diagrams`, `get_diagram`,
    `create_diagram`, `update_diagram`, `rename_diagram`, `list_fields`,
-   `create_field` are available): create or update the draft directly. The
+   `create_field`, `list_attachments`, `get_attachment_url` are available): create or update the draft directly. The
    result you hand to the user is the `editorUrl`.
 2. **No MCP server**: write a diagram file with `scripts/prepare-diagram.mjs` and
    tell the user to open it with "Import from JSON" in their dashboard at
@@ -81,8 +81,12 @@ point at a field by its id and carry a copy of its name and type.
   `YYYY-MM-DD`, link an `http(s)` address, select one of the field's options,
   boolean `true` or `false`. An unknown field id, a value that does not fit
   the type, or two values of a field that is not `multiple` are refused.
-- Attachments (type `file`) are added by the user in the editor. Carry their
-  values over as `get_diagram` returned them; you cannot set new ones.
+- Attachments (type `file`) are private files the user added in the editor
+  (PDF, text, Markdown, JSON or an image); the value is the attachment's id.
+  Carry their values over as `get_diagram` returned them; you cannot upload
+  or set new ones. To read one, `list_attachments` lists them and
+  `get_attachment_url` gives a download link that works for ten minutes;
+  do not show that link to anyone else.
 - `update_diagram` replaces the whole draft: carry over every component's
   `fields` or its values are removed. Notes carry no fields.
 - In a JSON file, `data.fields` keeps the copy of name and type, so the file
