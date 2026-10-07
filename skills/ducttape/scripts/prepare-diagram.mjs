@@ -67,7 +67,7 @@ const isHttp = (v) => {
   }
 };
 
-/** Whether a meta field value fits its type (fieldValueFits in the app); an empty text is allowed. */
+/** Whether a meta field value fits its type (fieldValueFits in the app); an empty value is allowed for every type but "file". */
 function fieldValueFits(type, value) {
   switch (type) {
     case "text":
@@ -104,7 +104,7 @@ function validateFields(at, fields, nodeType) {
     if (!isStr(f.name, FIELD.name, 1)) errors.push(`${here}: "name" must be a string of 1 to ${FIELD.name} characters.`);
     if (!FIELD.types.includes(f.type)) errors.push(`${here}: "type" must be one of ${FIELD.types.join(", ")}.`);
     // Not yet filled: an empty string passes for text, link and date (as in the app's schema).
-    else if (!((f.value === "" && ["text", "link", "date"].includes(f.type)) || fieldValueFits(f.type, f.value))) {
+    else if (!((f.value === "" && f.type !== "file") || fieldValueFits(f.type, f.value))) {
       errors.push(`${here}: the value does not fit the type ${f.type}.`);
     }
     if (f.shown !== undefined && typeof f.shown !== "boolean") errors.push(`${here}: "shown" must be true or false.`);
@@ -114,7 +114,7 @@ function validateFields(at, fields, nodeType) {
 /** Room for the shown meta fields: one line per field with a shown value, at most three (fieldLinesHeight in the app). */
 function fieldLinesHeight(fields) {
   if (!Array.isArray(fields)) return 0;
-  const shown = new Set(fields.filter((f) => f && f.shown === true).map((f) => f.fieldId)).size;
+  const shown = new Set(fields.filter((f) => f && f.shown === true && f.value !== "").map((f) => f.fieldId)).size;
   const lines = Math.min(FIELD_LINES.max, shown);
   return lines > 0 ? FIELD_LINES.gap + lines * FIELD_LINES.lineHeight : 0;
 }
