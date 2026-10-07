@@ -17,13 +17,17 @@ import { fileURLToPath } from "node:url";
 const LIMITS = { nodes: 500, edges: 1000, bytes: 512 * 1024, images: 20 };
 // Shape of an address in the app's own file storage (ASSET_URL in the app).
 const IMAGE_URL = /^https:\/\/[a-z0-9]+\.public\.blob\.vercel-storage\.com\/assets\/[A-Za-z0-9_-]+\.(?:png|jpg|webp|svg)$/;
-const SIZE = { note: { width: 200, height: 112 } };
 const DISPLAYS = ["block", "icon"];
 // Meta fields (FIELD_LIMITS and fieldValueFits in the app).
 const FIELD = { types: ["text", "number", "date", "link", "select", "boolean", "file"], perNode: 50, name: 60, text: 2000, link: 2000, option: 80 };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const DATE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 const GAP = { rank: 64, node: 32 };
+// Edge labels as the editor draws them (EDGE_LABEL in the app's lib/edge-label-spot.ts): the gap
+// between two layers is at least the widest label in it plus a free line on each side.
+const EDGE_LABEL = { charWidth: 7, padding: 18, margin: 16 };
+// Notes grow with their text (NOTE_NODE in the app's lib/node-display.ts).
+const NOTE = { width: 200, minHeight: 112, padding: 12, border: 1, lineHeight: 20, charsPerLine: 24 };
 // Shown meta fields: lines under a component's name (FIELD_LINES in the app's lib/node-display.ts).
 const FIELD_LINES = { lineHeight: 14, gap: 4, max: 3 };
 
@@ -117,11 +121,61 @@ function fieldLinesHeight(fields) {
 
 /** Size of a node for the layout (aiNodeSize in the app); a component as a block or as an icon with its labels below. */
 function sizeOf(n) {
-  if (n.type === "note") return SIZE.note;
+  if (n.type === "note") return noteSize(n.label);
   const fieldRoom = fieldLinesHeight(n.fields);
   if (n.display !== "icon") return { width: 200, height: (n.model ? 72 : 56) + fieldRoom };
   const label = n.label ?? kindName.get(n.kind) ?? n.kind ?? "";
   return { width: 136, height: 86 + (label.length > 16 ? 36 : 18) + (n.vendor || n.model ? 16 : 0) + fieldRoom };
+}
+
+/** A note as high as its text, at least 112px (noteSize in the app). */
+function noteSize(text) {
+  let lines = 0;
+  for (const paragraph of String(text ?? "").split("\n")) {
+    let n = 1;
+    let used = 0;
+    for (const word of paragraph.split(/\s+/).filter(Boolean)) {
+      let w = word.length;
+      if (used > 0 && used + 1 + w > NOTE.charsPerLine) {
+        n++;
+        used = 0;
+      }
+      while (w > NOTE.charsPerLine) {
+        n++;
+        w -= NOTE.charsPerLine;
+      }
+      used += (used > 0 ? 1 : 0) + w;
+    }
+    lines += n;
+  }
+  const height = 2 * (NOTE.padding + NOTE.border) + lines * NOTE.lineHeight;
+  return { width: NOTE.width, height: Math.max(NOTE.minHeight, Math.ceil(height / 8) * 8) };
+}
+
+const labelWidth = (label) => (label ? Math.ceil(String(label).length * EDGE_LABEL.charWidth) + EDGE_LABEL.padding : 0);
+
+/** The pair of sides, one on each box, whose middles are nearest (nearestHandlePair in the app). */
+function nearestHandles(a, b) {
+  const points = (r) => ({
+    l: { x: r.x, y: r.y + r.height / 2 },
+    r: { x: r.x + r.width, y: r.y + r.height / 2 },
+    t: { x: r.x + r.width / 2, y: r.y },
+    b: { x: r.x + r.width / 2, y: r.y + r.height },
+  });
+  const from = points(a);
+  const to = points(b);
+  let best = { sourceHandle: "r", targetHandle: "l" };
+  let bestD = Infinity;
+  for (const s of ["l", "r", "t", "b"]) {
+    for (const t of ["l", "r", "t", "b"]) {
+      const d = (from[s].x - to[t].x) ** 2 + (from[s].y - to[t].y) ** 2;
+      if (d < bestD) {
+        bestD = d;
+        best = { sourceHandle: s, targetHandle: t };
+      }
+    }
+  }
+  return best;
 }
 
 /** Checks a finished diagram the way the server does on import. */
@@ -253,9 +307,18 @@ function layout(nodes, edges) {
     layer.reduce((sum, id) => sum + (direction === "LR" ? size.get(id).height : size.get(id).width), 0) +
     GAP.node * (layer.length - 1);
   const widest = Math.max(...layers.map(breadth), 0);
+  // The widest label leaving each layer (only for the left-to-right reading, where labels sit
+  // across the gap; top to bottom they sit beside the line).
+  const labelGap = layers.map(() => 0);
+  for (const e of edges) {
+    const r = rank.get(e.source);
+    if (r === undefined || rank.get(e.target) === undefined) continue;
+    const from = Math.min(r, rank.get(e.target));
+    if (direction === "LR") labelGap[from] = Math.max(labelGap[from], labelWidth(e.label) + 2 * EDGE_LABEL.margin);
+  }
   const pos = new Map();
   let along = 0;
-  for (const layer of layers) {
+  for (const [r, layer] of layers.entries()) {
     let across = (widest - breadth(layer)) / 2;
     let depth = 0;
     for (const id of layer) {
@@ -264,7 +327,7 @@ function layout(nodes, edges) {
       across += (direction === "LR" ? s.height : s.width) + GAP.node;
       depth = Math.max(depth, direction === "LR" ? s.width : s.height);
     }
-    along += depth + GAP.rank;
+    along += depth + Math.max(GAP.rank, labelGap[r]);
   }
   return pos;
 }
@@ -282,14 +345,15 @@ if (input && typeof input === "object" && "schemaVersion" in input) {
   const known = new Set(nodes.map((n) => n.id));
   const usable = edges.filter((e) => e && known.has(e.source) && known.has(e.target) && e.source !== e.target);
   const pos = layout(nodes, usable);
-  const [from, to] = direction === "LR" ? ["r", "l"] : ["b", "t"];
+  const size = new Map(nodes.map((n) => [n.id, sizeOf(n)]));
+  const boxOf = (id) => ({ ...(pos.get(id) ?? { x: 0, y: 0 }), ...(size.get(id) ?? { width: 0, height: 0 }) });
   content = {
     schemaVersion: 1,
     nodes: nodes.map((n) => ({
       id: n.id,
       type: n.type,
       position: pos.get(n.id) ?? { x: 0, y: 0 },
-      ...(n.type === "note" ? SIZE.note : {}),
+      ...(n.type === "note" ? noteSize(n.label) : {}),
       data: {
         kind: n.kind,
         label: n.label ?? (n.type === "note" ? "" : (kindName.get(n.kind) ?? n.kind)),
@@ -310,8 +374,10 @@ if (input && typeof input === "object" && "schemaVersion" in input) {
       id: `e${i + 1}`,
       source: e?.source,
       target: e?.target,
-      sourceHandle: from,
-      targetHandle: to,
+      // The nearest pair of sides: a return path does not loop around its ends.
+      ...(known.has(e?.source) && known.has(e?.target)
+        ? nearestHandles(boxOf(e.source), boxOf(e.target))
+        : { sourceHandle: "r", targetHandle: "l" }),
       ...(e?.label ? { label: e.label } : {}),
       type: "smoothstep",
       markerEnd: "arrowclosed",
