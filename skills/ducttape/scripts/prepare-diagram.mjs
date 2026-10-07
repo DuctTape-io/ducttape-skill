@@ -7,7 +7,7 @@
 //
 // graph.json is either
 //   { "nodes": [{ "id", "kind", "label"?, "vendor"?, "model"?, "description"?, "href"?, "display"?, "role"?, "fields"? }],
-//     "edges": [{ "source", "target", "label"? }] }
+//     "edges": [{ "source", "target", "label"?, "flow"? }] }
 // or a finished diagram file (with "schemaVersion"), which is only validated.
 // "fields" are private meta field values: [{ "fieldId", "name", "type", "value", "shown"? }], see SKILL.md.
 import { readFileSync, writeFileSync } from "node:fs";
@@ -250,6 +250,9 @@ function validate(content) {
     if (!ids.has(e.source)) errors.push(`${at}: source "${e.source}" is not a node.`);
     if (!ids.has(e.target)) errors.push(`${at}: target "${e.target}" is not a node.`);
     if (e.source === e.target) errors.push(`${at}: a node cannot be connected to itself (${e.source}).`);
+    if (e.flow !== undefined && !["none", "data", "stream"].includes(e.flow)) {
+      errors.push(`${at}: "flow" must be none, data or stream.`);
+    }
     if (!optStr(e.label, 200)) errors.push(`${at}: "label" is longer than 200 characters.`);
   });
 }
@@ -389,6 +392,8 @@ if (input && typeof input === "object" && "schemaVersion" in input) {
       ...(e?.label ? { label: e.label } : {}),
       type: "smoothstep",
       markerEnd: "arrowclosed",
+      // What moves along it (lib/flow.ts in the app): "data" or "stream"; none is left out.
+      ...(e?.flow && e.flow !== "none" ? { flow: e.flow } : {}),
     })),
     viewport: { x: 0, y: 0, zoom: 1 },
   };
@@ -426,9 +431,11 @@ function checkNotes(c) {
     into.add(e.target);
   }
   const notes = [];
-  for (const n of c.nodes) {
+  const checked = c.nodes.filter((n) => n.type === "aiNode" && n.data?.kind !== "note");
+  // With a single component there is nothing to connect yet.
+  if (checked.length < 2) return notes;
+  for (const n of checked) {
     const kind = n.data?.kind ?? "";
-    if (n.type !== "aiNode" || kind === "note") continue;
     const name = n.data?.label || kindName.get(kind) || kind;
     const hasIn = into.has(n.id);
     const hasOut = out.has(n.id);

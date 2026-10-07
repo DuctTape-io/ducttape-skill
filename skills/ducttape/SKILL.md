@@ -3,7 +3,7 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.5.0"
+  version: "1.6.0"
   released: "2026-10-08"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
@@ -99,6 +99,13 @@ point at a field by its id and carry a copy of its name and type.
   checks the values the way the server does.
 - Mention values only when the user asks about them or they matter for the
   task; do not read them out by default.
+
+## Flow on a connection
+
+An edge may carry `"flow": "data"` (a dot travels from source to target, for single requests or
+messages) or `"flow": "stream"` (a pulse glides along the line, for streamed answers or event
+streams). Leave it out where nothing in particular flows. It moves in the editor and on the public
+page and shows as a still mark in images. MCP takes and returns it as `flow`.
 
 ## The check
 
