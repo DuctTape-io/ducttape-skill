@@ -216,6 +216,10 @@ function validate(content) {
     }
     if (!optStr(d.model, 120)) errors.push(`${at}: "model" is longer than 120 characters.`);
     if (!optStr(d.description, 2000)) errors.push(`${at}: "description" is longer than 2000 characters.`);
+    // The id in the Mermaid text it came from, as the server keeps it (diagramContentSchema).
+    if (d.mermaidId !== undefined && !isStr(d.mermaidId, 64)) {
+      errors.push(`${at}: "mermaidId" must be text of at most 64 characters.`);
+    }
     if (d.role !== undefined && !ROLES.includes(d.role)) {
       errors.push(`${at}: "role" must be one of ${ROLES.join(", ")}.`);
     }
