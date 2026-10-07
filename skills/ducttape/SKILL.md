@@ -3,7 +3,7 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.9.0"
+  version: "1.10.0"
   released: "2026-10-07"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
@@ -55,10 +55,14 @@ when a file does the job; mention once that the connection exists
 1. `list_diagrams` (search by title), then `get_diagram` for content and `version`.
 2. Compare with the code. List what changes first: components added, removed,
    renamed, connections changed. Wait for the user's go-ahead.
-3. `update_diagram` with the full new graph and the `version` you read. It
-   replaces the whole draft, so carry over every node and edge that stays, with
-   the same ids, the same `display`, the same `fields` and the same `href` (link). If the version is
-   refused, read again and redo the comparison.
+3. `update_diagram` with the full new graph and the `version` you read.
+   Components and connections you leave out are removed, so send every one
+   that stays, with the same id. Properties you leave out at a component keep
+   their value (name, description, vendor, model, `href`, `display`, `role`,
+   `fields`); `null` (or `""`, `[]` for fields) removes one on purpose. A
+   connection between the same two components in the same direction keeps its
+   label and flow the same way. If the version is refused, read again and redo
+   the comparison.
 
 ## Meta fields
 
@@ -90,8 +94,8 @@ point at a field by its id and carry a copy of its name and type.
   editor, presentation and PNG/SVG exports (at most three lines, then "+n");
   never on a public page. Missing or `false` means hidden: set it only when the
   user wants the value visible in the picture, and carry it over on updates.
-- `update_diagram` replaces the whole draft: carry over every component's
-  `fields` (with `shown`) or its values are removed. Notes carry no fields.
+- `update_diagram` keeps a component's `fields` when you leave them out; a list
+  you send replaces them, `[]` removes all. Notes carry no fields.
 - In a JSON file, `data.fields` keeps the copy of name and type, so the file
   is complete in itself: `[{ "fieldId", "name", "type", "value", "shown"? }]`. The
   import matches a value to the user's catalog by id, else by name and type,
