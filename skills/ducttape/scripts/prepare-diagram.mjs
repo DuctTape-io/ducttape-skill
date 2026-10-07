@@ -377,6 +377,8 @@ if (input && typeof input === "object" && "schemaVersion" in input) {
         ...(n.type === "aiNode" && n.display !== undefined && n.display !== "block" ? { display: n.display } : {}),
         // A role only where it differs from the kind's default.
         ...(n.type === "aiNode" && n.role !== undefined && n.role !== kindRole.get(n.kind) ? { role: n.role } : {}),
+        // The id in a Mermaid text it came from, kept for "Update from Mermaid".
+        ...(typeof n.mermaidId === "string" && n.mermaidId ? { mermaidId: n.mermaidId.slice(0, 64) } : {}),
         // Meta field values travel as given and are checked below with the rest.
         ...(n.fields !== undefined ? { fields: n.fields } : {}),
       },
