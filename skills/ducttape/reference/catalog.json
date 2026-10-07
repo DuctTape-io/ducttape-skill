@@ -1,280 +1,335 @@
 {
- "skillVersion": "1.4.2",
+ "skillVersion": "1.5.0",
  "blocks": [
   {
    "kind": "web-app",
    "category": "client",
-   "name": "Web app"
+   "name": "Web app",
+   "role": "start"
   },
   {
    "kind": "mobile-app",
    "category": "client",
-   "name": "Mobile app"
+   "name": "Mobile app",
+   "role": "start"
   },
   {
    "kind": "cli",
    "category": "client",
-   "name": "CLI"
+   "name": "CLI",
+   "role": "start"
   },
   {
    "kind": "chat-bot",
    "category": "client",
-   "name": "Chat bot"
+   "name": "Chat bot",
+   "role": "start"
   },
   {
    "kind": "browser-extension",
    "category": "client",
-   "name": "Browser extension"
+   "name": "Browser extension",
+   "role": "start"
   },
   {
    "kind": "api-server",
    "category": "backend",
-   "name": "API server"
+   "name": "API server",
+   "role": "pass"
   },
   {
    "kind": "serverless-function",
    "category": "backend",
-   "name": "Serverless function"
+   "name": "Serverless function",
+   "role": "pass"
   },
   {
    "kind": "worker",
    "category": "backend",
-   "name": "Worker"
+   "name": "Worker",
+   "role": "pass"
   },
   {
    "kind": "queue",
    "category": "backend",
-   "name": "Queue"
+   "name": "Queue",
+   "role": "pass"
   },
   {
    "kind": "cron",
    "category": "backend",
-   "name": "Cron job"
+   "name": "Cron job",
+   "role": "start"
   },
   {
    "kind": "agent",
    "category": "orchestration",
-   "name": "Agent"
+   "name": "Agent",
+   "role": "pass"
   },
   {
    "kind": "agent-loop",
    "category": "orchestration",
-   "name": "Agent loop"
+   "name": "Agent loop",
+   "role": "pass"
   },
   {
    "kind": "workflow",
    "category": "orchestration",
-   "name": "Workflow"
+   "name": "Workflow",
+   "role": "pass"
   },
   {
    "kind": "router",
    "category": "orchestration",
-   "name": "Router"
+   "name": "Router",
+   "role": "pass"
   },
   {
    "kind": "tool-call",
    "category": "orchestration",
-   "name": "Tool call"
+   "name": "Tool call",
+   "role": "end"
   },
   {
    "kind": "llm",
    "category": "model",
-   "name": "LLM"
+   "name": "LLM",
+   "role": "end"
   },
   {
    "kind": "embedding-model",
    "category": "model",
-   "name": "Embedding model"
+   "name": "Embedding model",
+   "role": "end"
   },
   {
    "kind": "reranker",
    "category": "model",
-   "name": "Reranker"
+   "name": "Reranker",
+   "role": "end"
   },
   {
    "kind": "image-model",
    "category": "model",
-   "name": "Image model"
+   "name": "Image model",
+   "role": "end"
   },
   {
    "kind": "audio-model",
    "category": "model",
-   "name": "Audio model"
+   "name": "Audio model",
+   "role": "end"
   },
   {
    "kind": "fine-tuned-model",
    "category": "model",
-   "name": "Fine-tuned model"
+   "name": "Fine-tuned model",
+   "role": "end"
   },
   {
    "kind": "ai-gateway",
    "category": "gateway",
-   "name": "AI gateway"
+   "name": "AI gateway",
+   "role": "pass"
   },
   {
    "kind": "model-router",
    "category": "gateway",
-   "name": "Model router"
+   "name": "Model router",
+   "role": "pass"
   },
   {
    "kind": "rate-limiter",
    "category": "gateway",
-   "name": "Rate limiter"
+   "name": "Rate limiter",
+   "role": "pass"
   },
   {
    "kind": "cache",
    "category": "gateway",
-   "name": "Cache"
+   "name": "Cache",
+   "role": "end"
   },
   {
    "kind": "vector-db",
    "category": "retrieval",
-   "name": "Vector DB"
+   "name": "Vector DB",
+   "role": "end"
   },
   {
    "kind": "hybrid-search",
    "category": "retrieval",
-   "name": "Hybrid search"
+   "name": "Hybrid search",
+   "role": "end"
   },
   {
    "kind": "chunker",
    "category": "retrieval",
-   "name": "Chunker"
+   "name": "Chunker",
+   "role": "pass"
   },
   {
    "kind": "document-loader",
    "category": "retrieval",
-   "name": "Document loader"
+   "name": "Document loader",
+   "role": "pass"
   },
   {
    "kind": "knowledge-graph",
    "category": "retrieval",
-   "name": "Knowledge graph"
+   "name": "Knowledge graph",
+   "role": "end"
   },
   {
    "kind": "relational-db",
    "category": "data",
-   "name": "Relational DB"
+   "name": "Relational DB",
+   "role": "end"
   },
   {
    "kind": "object-storage",
    "category": "data",
-   "name": "Object storage"
+   "name": "Object storage",
+   "role": "end"
   },
   {
    "kind": "data-warehouse",
    "category": "data",
-   "name": "Data warehouse"
+   "name": "Data warehouse",
+   "role": "end"
   },
   {
    "kind": "external-api",
    "category": "data",
-   "name": "External API"
+   "name": "External API",
+   "role": "end"
   },
   {
    "kind": "file",
    "category": "data",
-   "name": "File"
+   "name": "File",
+   "role": "free"
   },
   {
    "kind": "mcp-server",
    "category": "tools",
-   "name": "MCP server"
+   "name": "MCP server",
+   "role": "end"
   },
   {
    "kind": "function-tool",
    "category": "tools",
-   "name": "Function tool"
+   "name": "Function tool",
+   "role": "end"
   },
   {
    "kind": "code-sandbox",
    "category": "tools",
-   "name": "Code sandbox"
+   "name": "Code sandbox",
+   "role": "end"
   },
   {
    "kind": "browser-tool",
    "category": "tools",
-   "name": "Browser tool"
+   "name": "Browser tool",
+   "role": "end"
   },
   {
    "kind": "web-search",
    "category": "tools",
-   "name": "Web search"
+   "name": "Web search",
+   "role": "end"
   },
   {
    "kind": "short-term-memory",
    "category": "memory",
-   "name": "Short-term memory"
+   "name": "Short-term memory",
+   "role": "end"
   },
   {
    "kind": "long-term-memory",
    "category": "memory",
-   "name": "Long-term memory"
+   "name": "Long-term memory",
+   "role": "end"
   },
   {
    "kind": "session-store",
    "category": "memory",
-   "name": "Session store"
+   "name": "Session store",
+   "role": "end"
   },
   {
    "kind": "guardrails",
    "category": "security",
-   "name": "Guardrails"
+   "name": "Guardrails",
+   "role": "pass"
   },
   {
    "kind": "pii-filter",
    "category": "security",
-   "name": "PII filter"
+   "name": "PII filter",
+   "role": "pass"
   },
   {
    "kind": "auth",
    "category": "security",
-   "name": "Auth"
+   "name": "Auth",
+   "role": "end"
   },
   {
    "kind": "secrets-manager",
    "category": "security",
-   "name": "Secrets manager"
+   "name": "Secrets manager",
+   "role": "end"
   },
   {
    "kind": "evals",
    "category": "quality",
-   "name": "Evals"
+   "name": "Evals",
+   "role": "end"
   },
   {
    "kind": "tracing",
    "category": "quality",
-   "name": "Tracing"
+   "name": "Tracing",
+   "role": "end"
   },
   {
    "kind": "feedback-loop",
    "category": "quality",
-   "name": "Feedback loop"
+   "name": "Feedback loop",
+   "role": "free"
   },
   {
    "kind": "prompt-registry",
    "category": "quality",
-   "name": "Prompt registry"
+   "name": "Prompt registry",
+   "role": "end"
   },
   {
    "kind": "end-user",
    "category": "human",
-   "name": "End user"
+   "name": "End user",
+   "role": "start"
   },
   {
    "kind": "human-in-the-loop",
    "category": "human",
-   "name": "Human in the loop"
+   "name": "Human in the loop",
+   "role": "end"
   },
   {
    "kind": "admin",
    "category": "human",
-   "name": "Admin"
+   "name": "Admin",
+   "role": "start"
   },
   {
    "kind": "box",
    "category": "generic",
-   "name": "Box"
+   "name": "Box",
+   "role": "free"
   },
   {
    "kind": "note",

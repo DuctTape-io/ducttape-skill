@@ -6,7 +6,7 @@
 //   node prepare-diagram.mjs graph.json "My title.json" [--direction LR|TB]
 //
 // graph.json is either
-//   { "nodes": [{ "id", "kind", "label"?, "vendor"?, "model"?, "description"?, "href"?, "display"?, "fields"? }],
+//   { "nodes": [{ "id", "kind", "label"?, "vendor"?, "model"?, "description"?, "href"?, "display"?, "role"?, "fields"? }],
 //     "edges": [{ "source", "target", "label"? }] }
 // or a finished diagram file (with "schemaVersion"), which is only validated.
 // "fields" are private meta field values: [{ "fieldId", "name", "type", "value", "shown"? }], see SKILL.md.
@@ -45,6 +45,9 @@ const catalog = JSON.parse(
   readFileSync(join(dirname(fileURLToPath(import.meta.url)), "..", "reference", "catalog.json"), "utf8"),
 );
 const kindName = new Map(catalog.blocks.map((b) => [b.kind, b.name]));
+// The diagram check (lib/check.ts in the app): a default role per kind, "role" on a node overrides it.
+const ROLES = ["start", "pass", "end", "free"];
+const kindRole = new Map(catalog.blocks.map((b) => [b.kind, b.role]));
 const vendorIds = new Set(catalog.vendors.map((v) => v.id));
 
 let input;
@@ -213,6 +216,9 @@ function validate(content) {
     }
     if (!optStr(d.model, 120)) errors.push(`${at}: "model" is longer than 120 characters.`);
     if (!optStr(d.description, 2000)) errors.push(`${at}: "description" is longer than 2000 characters.`);
+    if (d.role !== undefined && !ROLES.includes(d.role)) {
+      errors.push(`${at}: "role" must be one of ${ROLES.join(", ")}.`);
+    }
     if (d.display !== undefined && !DISPLAYS.includes(d.display)) {
       errors.push(`${at}: "display" must be block or icon.`);
     }
@@ -366,6 +372,8 @@ if (input && typeof input === "object" && "schemaVersion" in input) {
         href: n.href ?? null,
         // Only components have a second display; "block" is the default and is left out.
         ...(n.type === "aiNode" && n.display !== undefined && n.display !== "block" ? { display: n.display } : {}),
+        // A role only where it differs from the kind's default.
+        ...(n.type === "aiNode" && n.role !== undefined && n.role !== kindRole.get(n.kind) ? { role: n.role } : {}),
         // Meta field values travel as given and are checked below with the rest.
         ...(n.fields !== undefined ? { fields: n.fields } : {}),
       },
@@ -393,6 +401,8 @@ const json = content ? JSON.stringify(content, null, 2) : "";
 if (Buffer.byteLength(json) > LIMITS.bytes) errors.push("The diagram is larger than 512 KB.");
 
 for (const w of warnings) console.error(`Warning: ${w}`);
+// Notes of the check, the same as the app gives: only what is missing, never errors.
+if (content && !errors.length) for (const note of checkNotes(content)) console.log(`Check: ${note}`);
 if (errors.length) {
   for (const e of errors) console.error(`Error: ${e}`);
   console.error(`\n${errors.length} error(s). Nothing was written.`);
@@ -404,4 +414,34 @@ if (outPath) {
   console.log('Open it with "Import from JSON" at https://theducttape.io/app. The file name becomes the title.');
 } else {
   console.log(`Valid: ${content.nodes.length} components, ${content.edges.length} connections. Give an output path to write the file.`);
+}
+
+/** The diagram check (checkDiagram in the app's lib/check.ts): what is missing, per component. */
+function checkNotes(c) {
+  const into = new Set();
+  const out = new Set();
+  for (const e of c.edges) {
+    if (!e || e.source === e.target) continue;
+    out.add(e.source);
+    into.add(e.target);
+  }
+  const notes = [];
+  for (const n of c.nodes) {
+    const kind = n.data?.kind ?? "";
+    if (n.type !== "aiNode" || kind === "note") continue;
+    const name = n.data?.label || kindName.get(kind) || kind;
+    const hasIn = into.has(n.id);
+    const hasOut = out.has(n.id);
+    if (!hasIn && !hasOut) {
+      notes.push(`“${name}” is not connected to anything.`);
+      continue;
+    }
+    const role = ROLES.includes(n.data?.role) ? n.data.role : (kindRole.get(kind) ?? "free");
+    if (role === "pass") {
+      if (!hasIn) notes.push(`Nothing leads into “${name}”.`);
+      if (!hasOut) notes.push(`Nothing leads out of “${name}”.`);
+    } else if (role === "start" && !hasOut) notes.push(`“${name}” is a starting point, but nothing leads out of it.`);
+    else if (role === "end" && !hasIn) notes.push(`“${name}” is an end point, but nothing leads into it.`);
+  }
+  return notes;
 }
