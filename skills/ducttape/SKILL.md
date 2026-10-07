@@ -3,7 +3,7 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.6.0"
+  version: "1.7.0"
   released: "2026-10-08"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
@@ -99,6 +99,17 @@ point at a field by its id and carry a copy of its name and type.
   checks the values the way the server does.
 - Mention values only when the user asks about them or they matter for the
   task; do not read them out by default.
+
+## Mermaid in and out
+
+Over MCP, `import_mermaid` turns Mermaid text (`flowchart`/`graph` or `architecture-beta`, or the
+first mermaid block of a Markdown file with `markdown: true`) into a new diagram: labels are
+matched against the catalog (kinds, vendors, model families), the rest becomes a generic box,
+subgraphs become groups, styling is skipped, the server arranges everything and returns `check`.
+`export_mermaid` gives a diagram back as `flowchart` (or `architecture-beta`) with stable ids in
+`%% ducttape:<nodeId>` comments, so a text edited by hand can update the diagram in the editor
+("Update from Mermaid") without losing positions or meta fields. Without MCP, the editor's
+"New diagram" offers "From Mermaid" for pasted text or an .mmd/.md file.
 
 ## Flow on a connection
 
