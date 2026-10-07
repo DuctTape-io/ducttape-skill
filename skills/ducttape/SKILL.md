@@ -3,7 +3,7 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.8.1"
+  version: "1.9.0"
   released: "2026-10-07"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
@@ -57,7 +57,7 @@ when a file does the job; mention once that the connection exists
    renamed, connections changed. Wait for the user's go-ahead.
 3. `update_diagram` with the full new graph and the `version` you read. It
    replaces the whole draft, so carry over every node and edge that stays, with
-   the same ids, the same `display` and the same `fields`. If the version is
+   the same ids, the same `display`, the same `fields` and the same `href` (link). If the version is
    refused, read again and redo the comparison.
 
 ## Meta fields
@@ -153,6 +153,10 @@ the user publishes in the app and gives you the link (`https://theducttape.io/d/
 - No new images: the user uploads them in the editor. `get_diagram` returns them
   as nodes of kind `image`; pass these on to `update_diagram` with their id
   unchanged, or the image leaves the draft.
-- At most 500 components and 1000 connections; a readable diagram has 8 to 25 components.
+<!-- limits:start (written by scripts/pack-skill.mjs from the app's constants) -->
+- Text lengths: a component's name, a note's text and a connection's label at most 200 characters each; a description at most 2000; a link (`href`, http or https) at most 2000. A longer text is refused with the component, the field and the limit: shorten that one and send again.
+- At most 500 components and 1000 connections; at most 50 field values per component, a text value at most 2000 characters.
+<!-- limits:end -->
+- A readable diagram has 8 to 25 components.
 - Vendor names and logos belong to their owners. Name a vendor only where the
   system really uses it.

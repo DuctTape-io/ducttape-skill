@@ -227,6 +227,7 @@ function validate(content) {
       errors.push(`${at}: "display" must be block or icon.`);
     }
     if (d.href != null && !isHttp(d.href)) errors.push(`${at}: "href" must be an http or https link.`);
+    if (!optStr(d.href, 2000)) errors.push(`${at}: "href" is longer than 2000 characters.`);
     validateFields(at, d.fields, n.type);
     // An image the user placed in the editor: passed through as it is, never made up.
     if ((n.type === "imageNode") !== (d.image !== undefined)) {
