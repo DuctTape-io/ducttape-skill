@@ -122,35 +122,59 @@ function fieldLinesHeight(fields) {
   return lines > 0 ? FIELD_LINES.gap + lines * FIELD_LINES.lineHeight : 0;
 }
 
-/** Size of a node for the layout (aiNodeSize in the app); a component as a block or as an icon with its labels below. */
+/** The block and the icon as the app draws them (BLOCK_NODE, ICON_NODE in lib/node-display.ts). */
+const BLOCK = { width: 200, frame: 26, chip: 32, labelLine: 18, categoryLine: 14, detailLine: 16, charsPerLine: 17 };
+const ICON = { width: 136, top: 72, labelLine: 18, categoryLine: 14, detailLine: 16, charsPerLine: 16, maxLines: 3 };
+
+/** Lines a paragraph takes when wrapped at word boundaries; a word longer than a line is broken. */
+function wrappedLines(paragraph, width) {
+  let lines = 1;
+  let used = 0;
+  for (const word of String(paragraph).split(/\s+/).filter(Boolean)) {
+    let w = word.length;
+    if (used > 0 && used + 1 + w > width) {
+      lines++;
+      used = 0;
+    }
+    while (w > width) {
+      lines++;
+      w -= width;
+    }
+    used += (used > 0 ? 1 : 0) + w;
+  }
+  return lines;
+}
+
+/** The name as shown: the label, else the kind's catalog name. */
+const shownName = (label, kind) => label || kindName.get(kind) || kind || "";
+
+/** Whether the icon display cuts the name short (more than three lines); the check's note "truncated". */
+const iconNameCut = (name) => wrappedLines(name, ICON.charsPerLine) > ICON.maxLines;
+
+/**
+ * Size of a node for the layout (aiNodeSize in the app): the block keeps 200px and grows downwards
+ * with its name, the icon shows at most three lines of it.
+ */
 function sizeOf(n) {
   if (n.type === "note") return noteSize(n.label);
   const fieldRoom = fieldLinesHeight(n.fields);
-  if (n.display !== "icon") return { width: 200, height: (n.model ? 72 : 56) + fieldRoom };
-  const label = n.label ?? kindName.get(n.kind) ?? n.kind ?? "";
-  return { width: 136, height: 86 + (label.length > 16 ? 36 : 18) + (n.vendor || n.model ? 16 : 0) + fieldRoom };
+  const name = shownName(n.label, n.kind);
+  if (n.display !== "icon") {
+    const lines = wrappedLines(name, BLOCK.charsPerLine);
+    const column = lines * BLOCK.labelLine + BLOCK.categoryLine + (n.model ? BLOCK.detailLine : 0) + fieldRoom;
+    return { width: BLOCK.width, height: BLOCK.frame + Math.max(BLOCK.chip, column) };
+  }
+  const lines = Math.min(ICON.maxLines, wrappedLines(name, ICON.charsPerLine));
+  return {
+    width: ICON.width,
+    height: ICON.top + lines * ICON.labelLine + ICON.categoryLine + (n.vendor || n.model ? ICON.detailLine : 0) + fieldRoom,
+  };
 }
 
 /** A note as high as its text, at least 112px (noteSize in the app). */
 function noteSize(text) {
   let lines = 0;
-  for (const paragraph of String(text ?? "").split("\n")) {
-    let n = 1;
-    let used = 0;
-    for (const word of paragraph.split(/\s+/).filter(Boolean)) {
-      let w = word.length;
-      if (used > 0 && used + 1 + w > NOTE.charsPerLine) {
-        n++;
-        used = 0;
-      }
-      while (w > NOTE.charsPerLine) {
-        n++;
-        w -= NOTE.charsPerLine;
-      }
-      used += (used > 0 ? 1 : 0) + w;
-    }
-    lines += n;
-  }
+  for (const paragraph of String(text ?? "").split("\n")) lines += wrappedLines(paragraph, NOTE.charsPerLine);
   const height = 2 * (NOTE.padding + NOTE.border) + lines * NOTE.lineHeight;
   return { width: NOTE.width, height: Math.max(NOTE.minHeight, Math.ceil(height / 8) * 8) };
 }
@@ -439,8 +463,30 @@ function checkNotes(c) {
   }
   const notes = [];
   const checked = c.nodes.filter((n) => n.type === "aiNode" && n.data?.kind !== "note");
+  const nameOf = (n) => shownName(n.data?.label, n.data?.kind);
+  // About the picture (10h): a name the icon cuts short, and components lying over each other.
+  const picture = [];
+  for (const n of checked) {
+    if (n.data?.display === "icon" && iconNameCut(nameOf(n))) {
+      picture.push(`The name of “${nameOf(n)}” is cut short as an icon. As a block it shows in full.`);
+    }
+  }
+  const boxes = checked.map((n) => {
+    const d = n.data ?? {};
+    const size = sizeOf({ ...d, type: n.type, kind: d.kind });
+    return { n, x: n.position?.x ?? 0, y: n.position?.y ?? 0, ...size };
+  });
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length; j++) {
+      const a = boxes[i];
+      const b = boxes[j];
+      if (a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height) {
+        picture.push(`“${nameOf(a.n)}” and “${nameOf(b.n)}” overlap. Move one aside or use Auto-layout.`);
+      }
+    }
+  }
   // With a single component there is nothing to connect yet.
-  if (checked.length < 2) return notes;
+  if (checked.length < 2) return picture;
   for (const n of checked) {
     const kind = n.data?.kind ?? "";
     const name = n.data?.label || kindName.get(kind) || kind;
@@ -457,5 +503,5 @@ function checkNotes(c) {
     } else if (role === "start" && !hasOut) notes.push(`“${name}” is a starting point, but nothing leads out of it.`);
     else if (role === "end" && !hasIn) notes.push(`“${name}” is an end point, but nothing leads into it.`);
   }
-  return notes;
+  return [...notes, ...picture];
 }

@@ -3,7 +3,7 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.11.0"
+  version: "1.12.0"
   released: "2026-10-08"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
@@ -133,7 +133,10 @@ database, a tool) with nothing leading in. Connections show the direction of a c
 agent calls is an end point even though answers flow back. Each kind has a default role
 (`role` in `reference/catalog.json`); set `"role": "start" | "pass" | "end" | "free"` on a node
 only when it plays another part ("free" is only checked for being connected). Notes and groups are
-not checked. `create_diagram`, `update_diagram` and `get_diagram` return the notes as `check`;
+not checked. Two notes are about the picture: components lying over each other, and a name the
+icon display cuts short. A block shows the whole name and grows downwards; an icon shows at most
+three lines of it, so keep icon names short or use the block. `create_diagram`, `update_diagram`
+and `get_diagram` return the notes as `check`;
 `prepare-diagram.mjs` prints them as `Check:` lines. Fix what the notes point at where the
 architecture really has that connection; leave them where it does not.
 
