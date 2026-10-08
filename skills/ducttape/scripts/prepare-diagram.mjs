@@ -123,7 +123,7 @@ function fieldLinesHeight(fields) {
 }
 
 /** The block and the icon as the app draws them (BLOCK_NODE, ICON_NODE in lib/node-display.ts). */
-const BLOCK = { width: 200, frame: 26, chip: 32, labelLine: 18, categoryLine: 14, detailLine: 16, charsPerLine: 17 };
+const BLOCK = { width: 200, frame: 26, chip: 32, labelLine: 18, categoryLine: 14, detailLine: 16, charsPerLine: 13 };
 const ICON = { width: 136, top: 72, labelLine: 18, categoryLine: 14, detailLine: 16, charsPerLine: 16, maxLines: 3 };
 
 /** Lines a paragraph takes when wrapped at word boundaries; a word longer than a line is broken. */
