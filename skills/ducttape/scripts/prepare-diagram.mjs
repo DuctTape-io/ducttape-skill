@@ -255,8 +255,8 @@ function validate(content) {
     if (!ids.has(e.source)) errors.push(`${at}: source "${e.source}" is not a node.`);
     if (!ids.has(e.target)) errors.push(`${at}: target "${e.target}" is not a node.`);
     if (e.source === e.target) errors.push(`${at}: a node cannot be connected to itself (${e.source}).`);
-    if (e.flow !== undefined && !["none", "data", "stream"].includes(e.flow)) {
-      errors.push(`${at}: "flow" must be none, data or stream.`);
+    if (e.flow !== undefined && !["none", "data", "stream", "document"].includes(e.flow)) {
+      errors.push(`${at}: "flow" must be none, data, stream or document.`);
     }
     if (!optStr(e.label, 200)) errors.push(`${at}: "label" is longer than 200 characters.`);
   });
@@ -399,7 +399,7 @@ if (input && typeof input === "object" && "schemaVersion" in input) {
       ...(e?.label ? { label: e.label } : {}),
       type: "smoothstep",
       markerEnd: "arrowclosed",
-      // What moves along it (lib/flow.ts in the app): "data" or "stream"; none is left out.
+      // What moves along it (lib/flow.ts in the app): "data", "stream" or "document"; none is left out.
       ...(e?.flow && e.flow !== "none" ? { flow: e.flow } : {}),
     })),
     viewport: { x: 0, y: 0, zoom: 1 },
