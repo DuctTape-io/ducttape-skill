@@ -352,7 +352,9 @@ function layout(nodes, edges) {
     const r = rank.get(e.source);
     if (r === undefined || rank.get(e.target) === undefined) continue;
     const from = Math.min(r, rank.get(e.target));
-    if (direction === "LR") labelGap[from] = Math.max(labelGap[from], labelWidth(e.label) + 2 * EDGE_LABEL.margin);
+    // A labelled connection with a flow keeps 40px more for its still mark (FLOW_MARK_ROOM in the app).
+    const markRoom = e.label && e.flow && e.flow !== "none" ? 40 : 0;
+    if (direction === "LR") labelGap[from] = Math.max(labelGap[from], labelWidth(e.label) + 2 * EDGE_LABEL.margin + markRoom);
   }
   const pos = new Map();
   let along = 0;
