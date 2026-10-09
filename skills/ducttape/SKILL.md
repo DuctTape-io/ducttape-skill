@@ -3,7 +3,7 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.12.2"
+  version: "1.12.3"
   released: "2026-10-08"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
@@ -117,10 +117,12 @@ subgraphs become groups, styling is skipped, the server arranges everything and 
 
 ## Flow on a connection
 
-An edge may carry `"flow": "data"` (a dot travels from source to target, for single requests or
-messages), `"flow": "stream"` (the line pulses from source to target, for streamed answers or
-event streams) or `"flow": "document"` (an upright sheet moves slowly from source to target, for files,
-uploads, documents on their way to indexing, batches or objects in storage). Leave it out where
+An edge may carry `"flow": "data"` (a dot, for single requests or messages), `"flow": "stream"`
+(fine dashes, for streamed answers or event streams) or `"flow": "document"` (an upright sheet that
+moves slowly, for files, uploads, documents on their way to indexing, batches or objects in storage).
+The arrowheads decide the way: a connection has its arrow at the target, so the flow runs from source
+to target; with arrows at both ends (set in the editor) it runs both ways, without arrows it stands
+still. Leave it out where
 nothing in particular flows; any other value is refused. It moves in the editor and on the public
 page and shows as a still mark in images. MCP takes and returns it as `flow`.
 
