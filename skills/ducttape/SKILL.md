@@ -3,8 +3,8 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.12.3"
-  released: "2026-10-08"
+  version: "1.13.0"
+  released: "2026-10-10"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
 ---
@@ -114,6 +114,12 @@ subgraphs become groups, styling is skipped, the server arranges everything and 
 `%% ducttape:<nodeId>` comments, so a text edited by hand can update the diagram in the editor
 ("Update from Mermaid") without losing positions or meta fields. Without MCP, the editor's
 "New diagram" offers "From Mermaid" for pasted text or an .mmd/.md file.
+
+`export_d2` gives a diagram as D2 text (d2lang.com): shapes with a class per category, groups,
+pools and lanes nested, arrows by their heads, `# ducttape:<nodeId>` comments; positions do not go
+along, D2 lays out by itself. `export_document` writes it as an AsciiDoc (`adoc`) or Markdown (`md`)
+document: title, description, the diagram as a mermaid block (or `[d2]` in AsciiDoc), tables of the
+components and connections. Meta fields are private: pass `metadata: true` only when the user asks.
 
 ## Flow on a connection
 
