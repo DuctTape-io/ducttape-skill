@@ -3,8 +3,8 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.13.0"
-  released: "2026-10-10"
+  version: "1.13.1"
+  released: "2026-10-12"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
 ---
@@ -166,7 +166,9 @@ the user publishes in the app and gives you the link (`https://theducttape.io/d/
 - Drafts only. You cannot publish, withdraw or delete, and you must not try to
   work around that. Say so and point to the app.
 - Ask before `update_diagram` on a diagram you did not create in this conversation.
-- No groups through MCP or the script; use a note or naming to mark boundaries.
+- No new groups through MCP or the script; use a note or naming to mark boundaries. The groups
+  the user drew come with `get_diagram` as nodes of kind `group`: pass them on to
+  `update_diagram` with their id unchanged, and their members stay in them.
 - No new images: the user uploads them in the editor. `get_diagram` returns them
   as nodes of kind `image`; pass these on to `update_diagram` with their id
   unchanged, or the image leaves the draft.

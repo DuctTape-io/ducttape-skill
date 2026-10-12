@@ -379,7 +379,7 @@ if (input && typeof input === "object" && "schemaVersion" in input) {
   const edges = Array.isArray(input.edges) ? input.edges : [];
   const nodes = input.nodes.map((n) => ({ ...n, type: n.kind === "note" ? "note" : "aiNode" }));
   for (const n of nodes) {
-    if (n.kind === "group") errors.push(`Node "${n.id}": groups are placed by hand in the editor; use a note instead.`);
+    if (n.kind === "group") errors.push(`Node "${n.id}": groups are drawn in the editor and cannot be created; use a note instead. An update_diagram keeps the groups get_diagram returned when you pass them on with their id.`);
     if (n.kind === "image") errors.push(`Node "${n.id}": images are uploaded in the editor and cannot be created here.`);
   }
   const known = new Set(nodes.map((n) => n.id));
