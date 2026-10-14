@@ -46,16 +46,16 @@ Typical architectures are built in: RAG, agents with tools, gateways with fallba
 ### Processes, software and decisions
 
 **"Draw our claims process in BPMN, with the agent that checks the documents in its own lane."**
-Pools, lanes, events, gateways and tasks, plus an AI lane that holds the model and the agent a task uses. Human review stays a step of its own.
+Pools, lanes, events, gateways and tasks, plus an AI lane that holds the model and the agent a task uses. Human review stays a step of its own. Starter template: [Process with an AI lane](https://theducttape.io/d/vvutzEaF8Jaa).
 
 **"Turn this onboarding process into an event-driven process chain."**
-Events and functions take turns, connectors split and join the paths, and every function gets its organisational unit. The AI function is connected to the component that carries it out.
+Events and functions take turns, connectors split and join the paths, and every function gets its organisational unit. The AI function is connected to the component that carries it out. Starter template: [Incoming invoices with an AI function](https://theducttape.io/d/crqpe4OXQR9Q).
 
 **"Draw the classes of this module as a UML class diagram."**
-Classes, interfaces and enumerations with their attributes and operations, inheritance, composition and multiplicities. A class that stands for a model or a vector store keeps its AI category.
+Classes, interfaces and enumerations with their attributes and operations, inheritance, composition and multiplicities. A class that stands for a model or a vector store keeps its AI category. Starter template: [RAG module as a class diagram](https://theducttape.io/d/nJ5YZYM43wHN).
 
 **"Model the credit decision in DMN, with the decision table."**
-Decisions, input data, knowledge sources and business knowledge models, a decision table with its hit policy, and the AI decision connected to the model that takes it.
+Decisions, input data, knowledge sources and business knowledge models, a decision table with its hit policy, and the AI decision connected to the model that takes it. Starter template: [Refund decision with AI](https://theducttape.io/d/fVbygzgBQSD5).
 
 **"Here is our Mermaid flowchart from the docs. Make it a diagram."**
 Claude imports Mermaid flowcharts, architecture diagrams and class diagrams and matches the labels against the catalog. The way back works too: export to Mermaid, edit the text, and update the diagram in the editor without losing positions.
@@ -156,7 +156,7 @@ node skills/ducttape/scripts/prepare-diagram.mjs graph.json "My diagram.json"
   <a href="https://theducttape.io/examples">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/gallery-dark.png">
-    <img src="docs/gallery.png" alt="Typical diagrams: a RAG support agent, a BPMN process with an AI lane, a multi-agent workflow and an LLM gateway with fallback" width="100%">
+    <img src="docs/gallery.png" alt="Typical diagrams: a RAG support agent, a BPMN process with an AI lane, a UML class diagram and a DMN refund decision" width="100%">
   </picture>
   </a>
 </p>
