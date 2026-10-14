@@ -3,8 +3,8 @@ name: ducttape
 description: Draw, update, explain and review AI architecture diagrams on DuctTape.io (theducttape.io). Use when the user wants an architecture diagram of an AI application from code or a description, wants an existing DuctTape.io diagram kept in step with the code, wants a diagram explained or reviewed, or asks for a diagram file to import into DuctTape.io.
 license: MIT
 metadata:
-  version: "1.13.1"
-  released: "2026-10-12"
+  version: "1.14.0"
+  released: "2026-10-14"
   repository: https://github.com/DuctTape-io/ducttape-skill
   homepage: https://theducttape.io/claude-skill
 ---
@@ -20,7 +20,8 @@ into the user's account.
 
 1. **MCP server connected** (tools `list_catalog`, `list_diagrams`, `get_diagram`,
    `create_diagram`, `update_diagram`, `rename_diagram`, `list_fields`,
-   `create_field`, `list_attachments`, `get_attachment_url` are available): create or update the draft directly. The
+   `create_field`, `list_attachments`, `get_attachment_url`, `trash_diagram`,
+   `archive_diagram`, `restore_diagram` are available): create or update the draft directly. The
    result you hand to the user is the `editorUrl`.
 2. **No MCP server**: write a diagram file with `scripts/prepare-diagram.mjs` and
    tell the user to open it with "Import from JSON" in their dashboard at
@@ -115,6 +116,11 @@ subgraphs become groups, styling is skipped, the server arranges everything and 
 ("Update from Mermaid") without losing positions or meta fields. Without MCP, the editor's
 "New diagram" offers "From Mermaid" for pasted text or an .mmd/.md file.
 
+Mermaid draws one diagram type per text. For a diagram that mixes UML classes with other
+components, `export_mermaid` with `parts: ["flowchart", "class"]` returns one text per type for
+docs; the plain `flowchart` is the whole diagram, its classes kept in `%% uml:` comments, and the
+one to use for the way back into DuctTape.io.
+
 `export_d2` gives a diagram as D2 text (d2lang.com): shapes with a class per category, groups,
 pools and lanes nested, arrows by their heads, `# ducttape:<nodeId>` comments; positions do not go
 along, D2 lays out by itself. `export_document` writes it as an AsciiDoc (`adoc`) or Markdown (`md`)
@@ -148,6 +154,126 @@ and `get_diagram` return the notes as `check`;
 `prepare-diagram.mjs` prints them as `Check:` lines. Fix what the notes point at where the
 architecture really has that connection; leave them where it does not.
 
+## Processes in BPMN notation
+
+A diagram can also show a business process in BPMN notation, joined to the AI system it uses.
+Over MCP this needs the BPMN licence on the user's account: `list_catalog` says
+`"bpmnLicensed": true` and lists the BPMN kinds with `"area": "bpmn"`; without it MCP refuses to
+create them, and `prepare-diagram.mjs` still writes the file (the editor opens it). The kinds are in
+`reference/catalog.json` under `bpmn` (tasks, events, gateways, data, containers).
+
+- A pool (`bpmn-pool`) holds lanes (`bpmn-lane` with `"parent": "<pool id>"`, in the order they
+  should stand). Tasks, events, gateways and data shapes go into a lane with `"parent": "<lane id>"`,
+  or into a pool without lanes. A pool never sits inside another container.
+- An AI lane (`bpmn-lane` with `"bpmn": {"aiLane": true}`, name left empty) holds the AI components
+  a task uses, and only those; connect the AI task (`bpmn-ai-task`), agent task or human review to
+  them. A pool may hold several AI lanes.
+- Events take `"bpmn": {"trigger": "message" | "timer"}` (a timer only catches); an intermediate
+  event may throw (`"throwing": true`). `"bpmn": {"vertical": true}` on a pool stands its lanes
+  side by side. Pools and lanes may carry `"band"`, the colour of their title band.
+- Connections at BPMN shapes carry a `notation` instead of a flow: `sequence` (the order of steps
+  in one pool), `message` (between pools), `association` (to data, annotations and AI components,
+  dotted; `"directed": true` adds an open head). Leave it out and it is chosen as the editor does.
+- Give no coordinates: each lane becomes a band, the steps line up in one rank across the lanes.
+- `update_diagram` with the licence takes the list as the whole diagram: shapes, pools and lanes
+  you leave out are removed, as with every other component. Send every node you want to keep.
+- The check adds the BPMN rules: a start and an end event per pool, nothing into a start or out of
+  an end, every task and gateway reached from a start and leading to an end, a parallel split joined
+  again, labelled ways out of an exclusive gateway, no gateway with one way in and one out, sequence
+  flows inside their pool and message flows between pools, and an AI or agent task connected to an
+  AI component. They are notes, like the others.
+
+Mermaid has no BPMN: `export_mermaid` writes events as circles, gateways as diamonds, pools and
+lanes as nested subgraphs and message flows as dotted arrows, with `%% bpmn:` comments that
+`import_mermaid` reads back for licensed accounts.
+
+## EPK, UML and DMN: the licences
+
+Three more notations work like BPMN, each with a licence of its own: `list_catalog` returns
+`"licences": {"bpmn", "dmn", "uml", "epk"}` and lists a notation's kinds (`"area": "epk"`, `"uml"`,
+`"dmn"`) only when it is licensed. Without the licence MCP refuses to create them, and
+`prepare-diagram.mjs` still writes the file (the editor opens it). Kinds, sizes and notations are
+in `reference/catalog.json` under `epk`, `uml` and `dmn`. Give no coordinates: the server and the
+script arrange each notation in its own way. Connections at their shapes carry a `notation`
+instead of a flow; leave it out and it is chosen by the ends, as the editor does. `update_diagram`
+takes the list as the whole diagram, as for BPMN.
+
+## Process chains in EPK notation
+
+An event-driven process chain (EPC) shows a business process as events and functions taking turns,
+joined to the AI system it uses. Kinds: `epk-event`, functions (`epk-function`; the bridge
+functions `epk-ai-function`, `epk-agent-function`, `epk-review-function`), connectors (`epk-and`,
+`epk-or`, `epk-xor`, unnamed), `epk-org-unit`, `epk-info-object`, `epk-process-path` (a link to
+another process). No pools, lanes or containers.
+
+- Notations: `epk-control` (the chain, between events, functions, connectors and process paths),
+  `epk-information` (to or from an information object), `epk-assignment` (an organisational unit
+  or an AI component to its function).
+- Paths split and meet only at connectors: an event or a function has one control flow in and one
+  out. A split is joined again by a connector of the same kind.
+- Layout: the chain top to bottom; units on the left of their function, information objects and AI
+  components on its right.
+- The check: a chain begins and ends with an event (or a process path); events and functions take
+  turns (connectors pass through); no OR or XOR right after an event (an event decides nothing);
+  every split meets a join of its kind; several flows out of or into an event or function need a
+  connector; every function has an organisational unit; an AI or agent function is connected to an
+  AI component.
+
+Mermaid: `export_mermaid` writes an EPC as a flowchart (events as stadiums, functions as
+rectangles, connectors as circles) with `%% epk:<id> <kind>` comments; `import_mermaid` reads such
+a flowchart back as an EPC with the EPK licence.
+
+## Class diagrams in UML notation
+
+A UML class diagram shows the code of an AI system: `uml-class`, `uml-interface`, `uml-abstract`,
+`uml-enum`. A class carries `"uml"`: `attributes` and `operations`, one line each with its
+visibility (`"+ id: UUID"`, `"+ search(q: Query): Chunk[*]"`; an enumeration's values as
+attributes; see "Limits"), and `category` (an AI category
+such as `"model"` or `"retrieval"`) for a class that stands for an AI component. The box grows with
+its texts.
+
+- Relations (`notation`): `uml-association` (`"directed": true` adds an open head at the target),
+  `uml-inheritance` (source = the special class, target = the general one), `uml-realization`
+  (source = the class, target = the interface), `uml-aggregation` and `uml-composition` (source =
+  the whole, target = the part), `uml-dependency` (source uses target). Left out: an association,
+  a realization towards an interface, a dependency to an AI component.
+- `sourceLabel` and `targetLabel` put a multiplicity or a role at the ends
+  (`"1"`, `"0..*"`); only on UML relations. `directed` only on associations.
+- Layout: in levels, the general class above the special ones.
+- The check: a realization ends at an interface; inheritance runs one way (no class inherits from
+  itself through others).
+
+Mermaid: a diagram of classes exports as `classDiagram`, and `import_mermaid` turns a
+`classDiagram` into classes with the UML licence. In a diagram that also has other components, the
+plain `flowchart` keeps the classes in `%% uml:` comments (the way back); `parts: ["flowchart",
+"class"]` gives one text per type for docs.
+
+## Decisions in DMN notation
+
+A DMN decision requirements diagram shows what a decision needs: `dmn-decision`, `dmn-ai-decision`
+(a decision a model takes), `dmn-input-data`, `dmn-knowledge-source` (a policy, a regulation),
+`dmn-bkm` (a business knowledge model: rules, a scoring function).
+
+- Requirements (`notation`): `dmn-information` (input data or a decision into a decision),
+  `dmn-knowledge` (from a business knowledge model into a decision or another model),
+  `dmn-authority` (from a knowledge source into a decision, a model or another source),
+  `dmn-association` (to an AI component). Left out: chosen by the source.
+- A decision's logic is a decision table: a node of kind `dmn-decision-table` with `"table"`:
+  `decision` (the id of its decision; one table per decision), `hitPolicy` (`U` unique, the default,
+  `A`, `F`, `P`, `C`, `R`, `O`), `aggregation` (only with `C`: `+`, `<`, `>`, `#`), `columns`
+  (`{ "name", "type"?: "string" | "number" | "boolean" | "date", "side": "in" | "out" }`, at least
+  one of each side) and `rules` (`{ "cells": [...one text per column...], "note"? }`, at least
+  one; a cell like `">= 700"` or `"-"` is shown as written, nothing is
+  evaluated). A table has no connections; it stands to the right of its decision.
+- A BPMN business rule task names the decision it applies: `"bpmn": {"decision": "<node id>"}`.
+- Layout: bottom up, a decision above what it requires.
+- The check: each requirement joins shapes it can; a decision requires something; an AI decision
+  is connected to an AI component; requirements form no loop; a table belongs to a decision of the
+  diagram, and a decision has at most one; a business rule task names a decision of the diagram.
+
+Mermaid has no DMN: `export_mermaid` writes the shapes as plain flowchart nodes and leaves the
+decision tables out; `import_mermaid` does not bring them back as DMN shapes.
+
 ## Workflow: explain or review
 
 Read the diagram with `get_diagram` (or the JSON file the user gives you).
@@ -161,10 +287,22 @@ for this system. Suggest, do not change, unless asked.
 Only on request: put the diagram's public link into a README. You cannot publish;
 the user publishes in the app and gives you the link (`https://theducttape.io/d/...`).
 
+## Links between diagrams
+
+A component, a group, a BPMN task or sub-process, an EPK function or process path and a DMN
+decision can point to another of the user's diagrams: `linkedDiagram` with that diagram's id
+(from `list_diagrams`) on `create_diagram` or `update_diagram`; `get_diagram` returns it. Use it
+for views of one system, an overview whose component opens the diagram that details it. Only the
+user's own diagrams; in the editor a click on the mark opens the target, and the public page shows
+the link only when the target is published too.
+
 ## Limits
 
-- Drafts only. You cannot publish, withdraw or delete, and you must not try to
+- You cannot publish, withdraw or delete a diagram for good, and you must not try to
   work around that. Say so and point to the app.
+- Move diagrams to the trash or the archive only when the user explicitly asks,
+  and ask which diagrams they mean before you do. Deleting for good and emptying
+  the trash only happen in the app.
 - Ask before `update_diagram` on a diagram you did not create in this conversation.
 - No new groups through MCP or the script; use a note or naming to mark boundaries. The groups
   the user drew come with `get_diagram` as nodes of kind `group`: pass them on to
@@ -175,6 +313,7 @@ the user publishes in the app and gives you the link (`https://theducttape.io/d/
 <!-- limits:start (written by scripts/pack-skill.mjs from the app's constants) -->
 - Text lengths: a component's name, a note's text and a connection's label at most 200 characters each; a description at most 2000; a link (`href`, http or https) at most 2000. A longer text is refused with the component, the field and the limit: shorten that one and send again.
 - At most 500 components and 1000 connections; at most 50 field values per component, a text value at most 2000 characters.
+- A UML class at most 50 attributes and 50 operations of at most 160 characters each; a text at a relation's end at most 40. A decision table at most 30 columns and 500 rules, a column name at most 80 characters, a cell or a rule's note at most 200.
 <!-- limits:end -->
 - A readable diagram has 8 to 25 components.
 - Vendor names and logos belong to their owners. Name a vendor only where the

@@ -1,5 +1,5 @@
 {
- "skillVersion": "1.13.1",
+ "skillVersion": "1.14.0",
  "blocks": [
   {
    "kind": "web-app",
@@ -678,5 +678,469 @@
    "id": "zendesk",
    "name": "Zendesk"
   }
- ]
+ ],
+ "bpmn": {
+  "kinds": [
+   {
+    "kind": "bpmn-task",
+    "group": "tasks",
+    "name": "Task",
+    "width": 160,
+    "height": 72
+   },
+   {
+    "kind": "bpmn-user-task",
+    "group": "tasks",
+    "name": "User task",
+    "width": 160,
+    "height": 72
+   },
+   {
+    "kind": "bpmn-service-task",
+    "group": "tasks",
+    "name": "Service task",
+    "width": 160,
+    "height": 72
+   },
+   {
+    "kind": "bpmn-business-rule-task",
+    "group": "tasks",
+    "name": "Business rule task",
+    "width": 160,
+    "height": 72
+   },
+   {
+    "kind": "bpmn-sub-process",
+    "group": "tasks",
+    "name": "Sub-process",
+    "width": 160,
+    "height": 80
+   },
+   {
+    "kind": "bpmn-ai-task",
+    "group": "tasks",
+    "name": "AI task",
+    "width": 176,
+    "height": 80
+   },
+   {
+    "kind": "bpmn-agent-task",
+    "group": "tasks",
+    "name": "Agent task",
+    "width": 176,
+    "height": 80
+   },
+   {
+    "kind": "bpmn-human-review",
+    "group": "tasks",
+    "name": "Human review",
+    "width": 176,
+    "height": 80
+   },
+   {
+    "kind": "bpmn-start-event",
+    "group": "events",
+    "name": "Start event",
+    "width": 40,
+    "height": 40
+   },
+   {
+    "kind": "bpmn-intermediate-event",
+    "group": "events",
+    "name": "Intermediate event",
+    "width": 40,
+    "height": 40
+   },
+   {
+    "kind": "bpmn-end-event",
+    "group": "events",
+    "name": "End event",
+    "width": 40,
+    "height": 40
+   },
+   {
+    "kind": "bpmn-exclusive-gateway",
+    "group": "gateways",
+    "name": "Exclusive gateway",
+    "width": 50,
+    "height": 50
+   },
+   {
+    "kind": "bpmn-parallel-gateway",
+    "group": "gateways",
+    "name": "Parallel gateway",
+    "width": 50,
+    "height": 50
+   },
+   {
+    "kind": "bpmn-inclusive-gateway",
+    "group": "gateways",
+    "name": "Inclusive gateway",
+    "width": 50,
+    "height": 50
+   },
+   {
+    "kind": "bpmn-data-object",
+    "group": "data",
+    "name": "Data object",
+    "width": 30,
+    "height": 38
+   },
+   {
+    "kind": "bpmn-data-store",
+    "group": "data",
+    "name": "Data store",
+    "width": 38,
+    "height": 44
+   },
+   {
+    "kind": "bpmn-annotation",
+    "group": "data",
+    "name": "Annotation",
+    "width": 140,
+    "height": 56
+   },
+   {
+    "kind": "bpmn-pool",
+    "group": "containers",
+    "name": "Pool"
+   },
+   {
+    "kind": "bpmn-lane",
+    "group": "containers",
+    "name": "Lane"
+   }
+  ],
+  "bands": [
+   "slate",
+   "blue",
+   "violet",
+   "peach",
+   "yellow",
+   "green",
+   "teal",
+   "pink"
+  ]
+ },
+ "epk": {
+  "groups": [
+   "flow",
+   "bridge",
+   "connectors",
+   "context"
+  ],
+  "kinds": [
+   {
+    "kind": "epk-event",
+    "group": "flow",
+    "name": "Event",
+    "width": 168,
+    "height": 52
+   },
+   {
+    "kind": "epk-function",
+    "group": "flow",
+    "name": "Function",
+    "width": 176,
+    "height": 56,
+    "function": true
+   },
+   {
+    "kind": "epk-ai-function",
+    "group": "bridge",
+    "name": "AI function",
+    "width": 192,
+    "height": 64,
+    "function": true,
+    "category": "model"
+   },
+   {
+    "kind": "epk-agent-function",
+    "group": "bridge",
+    "name": "Agent function",
+    "width": 192,
+    "height": 64,
+    "function": true,
+    "category": "orchestration"
+   },
+   {
+    "kind": "epk-review-function",
+    "group": "bridge",
+    "name": "Human review",
+    "width": 192,
+    "height": 64,
+    "function": true,
+    "category": "human"
+   },
+   {
+    "kind": "epk-and",
+    "group": "connectors",
+    "name": "AND connector",
+    "width": 32,
+    "height": 32,
+    "connector": true
+   },
+   {
+    "kind": "epk-or",
+    "group": "connectors",
+    "name": "OR connector",
+    "width": 32,
+    "height": 32,
+    "connector": true
+   },
+   {
+    "kind": "epk-xor",
+    "group": "connectors",
+    "name": "XOR connector",
+    "width": 32,
+    "height": 32,
+    "connector": true
+   },
+   {
+    "kind": "epk-org-unit",
+    "group": "context",
+    "name": "Organisational unit",
+    "width": 160,
+    "height": 56
+   },
+   {
+    "kind": "epk-info-object",
+    "group": "context",
+    "name": "Information object",
+    "width": 156,
+    "height": 56
+   },
+   {
+    "kind": "epk-process-path",
+    "group": "flow",
+    "name": "Process interface",
+    "width": 156,
+    "height": 56
+   }
+  ],
+  "notations": [
+   {
+    "id": "epk-control",
+    "name": "Control flow",
+    "help": "The order of the chain: solid, with a filled head."
+   },
+   {
+    "id": "epk-information",
+    "name": "Information flow",
+    "help": "Data read or written: dashed, with an open head."
+   },
+   {
+    "id": "epk-assignment",
+    "name": "Assignment",
+    "help": "Assigns an organisational unit or an AI component to a function: dotted, no head."
+   }
+  ]
+ },
+ "uml": {
+  "kinds": [
+   {
+    "kind": "uml-class",
+    "group": "classes",
+    "name": "Class"
+   },
+   {
+    "kind": "uml-interface",
+    "group": "classes",
+    "name": "Interface",
+    "stereotype": "interface"
+   },
+   {
+    "kind": "uml-abstract",
+    "group": "classes",
+    "name": "Abstract class"
+   },
+   {
+    "kind": "uml-enum",
+    "group": "classes",
+    "name": "Enumeration",
+    "stereotype": "enumeration"
+   }
+  ],
+  "notations": [
+   {
+    "id": "uml-association",
+    "name": "Association",
+    "help": "Two classes know each other: a plain line, directed with an open head at the end."
+   },
+   {
+    "id": "uml-inheritance",
+    "name": "Inheritance",
+    "help": "The class at the start is a special case of the one at the end: a hollow triangle at the general class."
+   },
+   {
+    "id": "uml-realization",
+    "name": "Realization",
+    "help": "The class at the start implements the interface at the end: dashed, a hollow triangle at the interface."
+   },
+   {
+    "id": "uml-aggregation",
+    "name": "Aggregation",
+    "help": "The class at the start holds the one at the end, which can exist without it: a hollow diamond at the whole."
+   },
+   {
+    "id": "uml-composition",
+    "name": "Composition",
+    "help": "The class at the start consists of the one at the end, which cannot exist without it: a filled diamond at the whole."
+   },
+   {
+    "id": "uml-dependency",
+    "name": "Dependency",
+    "help": "The class at the start uses the one at the end: dashed, with an open head."
+   }
+  ],
+  "generalizations": [
+   "uml-inheritance",
+   "uml-realization"
+  ],
+  "categories": [
+   "client",
+   "backend",
+   "orchestration",
+   "model",
+   "gateway",
+   "retrieval",
+   "data",
+   "tools",
+   "memory",
+   "security",
+   "quality",
+   "human"
+  ],
+  "limits": {
+   "maxLines": 50,
+   "maxLine": 160,
+   "maxEnd": 40
+  },
+  "box": {
+   "minWidth": 160,
+   "maxWidth": 320,
+   "head": 30,
+   "headStereotype": 44,
+   "row": 17,
+   "pad": 8,
+   "nameChar": 7.4,
+   "rowChar": 6.4,
+   "rowInset": 16,
+   "nameInset": 40
+  }
+ },
+ "dmn": {
+  "groups": [
+   "requirements",
+   "bridge"
+  ],
+  "kinds": [
+   {
+    "kind": "dmn-decision",
+    "group": "requirements",
+    "name": "Decision",
+    "width": 168,
+    "height": 64,
+    "decision": true
+   },
+   {
+    "kind": "dmn-ai-decision",
+    "group": "bridge",
+    "name": "AI decision",
+    "width": 192,
+    "height": 72,
+    "decision": true,
+    "category": "model"
+   },
+   {
+    "kind": "dmn-input-data",
+    "group": "requirements",
+    "name": "Input data",
+    "width": 160,
+    "height": 48
+   },
+   {
+    "kind": "dmn-knowledge-source",
+    "group": "requirements",
+    "name": "Knowledge source",
+    "width": 160,
+    "height": 64
+   },
+   {
+    "kind": "dmn-bkm",
+    "group": "requirements",
+    "name": "Business knowledge model",
+    "width": 168,
+    "height": 64
+   }
+  ],
+  "notations": [
+   {
+    "id": "dmn-information",
+    "name": "Information requirement",
+    "help": "A decision needs input data or another decision: solid, with a filled head."
+   },
+   {
+    "id": "dmn-knowledge",
+    "name": "Knowledge requirement",
+    "help": "A decision applies knowledge from a business knowledge model: dashed, with an open head."
+   },
+   {
+    "id": "dmn-authority",
+    "name": "Authority requirement",
+    "help": "A decision rests on a source, such as a policy: dashed, with a dot at the end."
+   },
+   {
+    "id": "dmn-association",
+    "name": "Association",
+    "help": "Attaches an AI component: dotted, no head."
+   }
+  ],
+  "table": {
+   "kind": "dmn-decision-table",
+   "name": "Decision table",
+   "group": "requirements",
+   "hitPolicies": [
+    "U",
+    "A",
+    "F",
+    "P",
+    "C",
+    "R",
+    "O"
+   ],
+   "aggregations": [
+    "+",
+    "<",
+    ">",
+    "#"
+   ],
+   "columnTypes": [
+    "string",
+    "number",
+    "boolean",
+    "date"
+   ],
+   "limits": {
+    "columns": 30,
+    "rules": 500,
+    "cell": 200,
+    "name": 80
+   },
+   "box": {
+    "mark": 26,
+    "head": 24,
+    "row": 22,
+    "minCol": 64,
+    "maxCol": 140,
+    "more": 40,
+    "double": 5,
+    "maxShownColumns": 6,
+    "maxShownRules": 10,
+    "cellChar": 6.6,
+    "headChar": 7.3,
+    "pad": 12
+   }
+  }
+ }
 }
